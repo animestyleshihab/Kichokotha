@@ -3,45 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>তোমার জন্য...</title>
+    <title>শুধু তোমার জন্য... 🌸</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
+
+        :root {
+            --bg-color-1: #ffc0cb; /* Pink */
+            --bg-color-2: #ffd700; /* Golden */
+            --bg-color-3: #f9a5b9; /* Deeper Pink */
+        }
 
         body {
             margin: 0;
             padding: 0;
             font-family: 'Hind Siliguri', sans-serif;
-            background: linear-gradient(135deg, #ffc0cb, #f9a5b9); /* সুন্দর গোলাপী গ্রেডিয়েন্ট */
             color: #333;
-            overflow-x: hidden; /* পাশাপাশি স্ক্রল বন্ধ করা হলো */
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, var(--bg-color-1), var(--bg-color-2), var(--bg-color-3));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
         }
 
-        /* উপর থেকে ঝরে পড়া হার্টের জন্য কন্টেইনার */
-        .hearts-container {
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* --- স্টার্ট স্ক্রিন (গান চালানোর জন্য) --- */
+        #start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10000;
+            cursor: pointer;
+            transition: opacity 0.5s ease-out;
+        }
+
+        #start-screen h1 {
+            color: white;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+        }
+        
+        #start-screen p {
+            color: white;
+            font-size: 1.2rem;
+            margin-top: -10px;
+            padding: 10px 20px;
+            border: 2px solid white;
+            border-radius: 20px;
+        }
+
+        /* --- ঝরে পড়া ইমোজি --- */
+        .falling-emojis-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            pointer-events: none; /* হার্টগুলোতে যেন ক্লিক না করা যায় */
+            pointer-events: none;
             z-index: 9999;
         }
 
-        .heart {
+        .emoji {
             position: absolute;
-            top: -10vh; /* স্ক্রিনের বাইরে থেকে শুরু হবে */
-            font-size: 2rem;
+            top: -10vh;
+            font-size: 1.8rem;
             animation: fall linear forwards;
         }
 
-        /* হার্ট ঝরে পড়ার অ্যানিমেশন */
         @keyframes fall {
             to {
                 transform: translateY(110vh) rotate(360deg);
             }
         }
 
-        /* লেখার জন্য প্রধান কন্টেইনার */
+        /* --- চ্যাট মেসেজ স্টাইল --- */
         .chat-container {
             width: 90%;
             max-width: 700px;
@@ -50,19 +95,21 @@
             box-sizing: border-box;
         }
 
-        /* প্রতিটি লেখার মেসেজ বক্স */
         .message {
             font-size: 1.5rem;
             line-height: 1.7;
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.25); /* গ্লাস ইফেক্ট */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             padding: 15px 20px;
             border-radius: 20px;
             margin-bottom: 25px;
-            opacity: 0; /* শুরুতে অদৃশ্য থাকবে */
+            opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
             border-bottom-left-radius: 5px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
 
         .message.visible {
@@ -70,118 +117,190 @@
             transform: translateY(0);
         }
 
-        /* টাইপিং কার্সার */
         .cursor {
             display: inline-block;
             width: 3px;
             height: 1.5rem;
-            background-color: #555;
+            background-color: #333;
             animation: blink 0.7s infinite;
             margin-left: 5px;
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
             50% { opacity: 0; }
         }
+
+        /* --- লিরিক্স স্টাইল --- */
+        .lyrics-container {
+            display: none; /* শুরুতে লুকানো থাকবে */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 50px 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
         
-        /* মোবাইল ডিভাইসের জন্য স্টাইল */
+        .lyrics-line {
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+
+        .lyrics-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* --- মোবাইল ডিভাইসের জন্য --- */
         @media (max-width: 600px) {
-            .message {
-                font-size: 1.2rem;
-                padding: 12px 15px;
-            }
-            .cursor {
-                height: 1.2rem;
-            }
+            .message { font-size: 1.2rem; }
+            .cursor { height: 1.2rem; }
+            .lyrics-line { font-size: 1.6rem; }
+            #start-screen h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
+    
+    <!-- স্টার্ট স্ক্রিন -->
+    <div id="start-screen">
+        <div>
+            <h1>তোমার জন্য 🩷</h1>
+            <p>শুরু করতে এখানে আলতো চাপ দিন</p>
+        </div>
+    </div>
+    
+    <!-- গান -->
+    <audio id="background-song" loop>
+        <source src="https://cdn.pagalworld.us/songs/128/Pehli Dafa - Atif Aslam.mp3" type="audio/mpeg">
+    </audio>
 
-    <div class="hearts-container" id="hearts-container"></div>
+    <div class="falling-emojis-container" id="emojis-container"></div>
 
+    <!-- প্রথম প্রেজেন্টেশন: চ্যাট -->
     <div class="chat-container" id="chat-container">
-        <!-- লেখাগুলো এখানে রাখা হয়েছে, কিন্তু JavaScript দিয়ে দেখানো হবে -->
-        <p class="message">🌸 আমার জীবনে আমি সব থেকে সুন্দর একটা জিনিস পেয়েছি — সেটা হলো তুমি... 💞</p>
-        <p class="message">আমি শুধু তোমার সাথেই এইরকম ফ্রি মাইন্ডসেটে কথা বলি 🫶🏻</p>
-        <p class="message">সব মানুষের জীবনেই তো একটা best person থাকে — আমার জীবনে সেটা তুমিই 💗</p>
-        <p class="message">আহ ভাবলেই চোখে পানি চলে আসে 😢 শরীর কেমন যেন হয়ে যায়... 🥺</p>
-        <p class="message">কতো কতো সময়, কতো কতো মেসেজ 🕊️ তোমার কাছে সত্যিই আমি কৃতজ্ঞ সারাজীবনের জন্য 🙏🏻❤️</p>
-        <p class="message">Love You... 💞🌸</p>
-        <p class="message">আজ শুধু ওই ঐশীর জন্যই সব মানুষের কাছে খারাপ হয়ে গেছো 😔 কারণ মানুষ তো সত্যিটা জানে না, তারা তো কিছুই দেখেনি 💭 তাই মনটা কেমন জানি ভারী লাগে 💔</p>
-        <p class="message">যদি এই মানুষটাকে নিজের করে পাওয়া যেতো... 😭 তাহলে জীবনের আনন্দটা আরো হাজার গুণ বেড়ে যেতো 🌈💫</p>
-        <p class="message">তুমি যদি অন্য রাজ্যের ‘🫅🏻’ হও, তবুও তুমি আমার বাগানের ‘🦋🌸’ — আর আমি শুধু তোমারই... 💞✨</p>
+        <p class="message">আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু... 🌸</p>
+        <p class="message">আমার প্রিয় ‘🕊️🌸’, তোমার সারাদিনটা হোক শান্তি আর হাসিতে ভরা 💫</p>
+        <p class="message">এই যে 🕊️, মেম উঠছেন নি এখনো 😴</p>
+        <p class="message">ভাবছিলাম, আপনাকে নিয়ে আজ কলেজে যাবো 🎒💞</p>
+        <p class="message">কিন্তু আপনি ঘুমাচ্ছিলেন, তাই আর ডাক দেইনি 🥹</p>
+        <p class="message">আচ্ছা এখন শুনেন ☕</p>
+        <p class="message">আগে ফ্রেশ হয়ে নেন 🪞, তারপর নাসতা খান 🍞☕</p>
+        <p class="message">তারপর একটু রেস্ট নিন 🌸</p>
+        <p class="message">যদি ভালো না লাগে তাহলে একটা কল দেন 📞 না হয় ভিডিও দেখেন 🎥💗</p>
+        <p class="message">আমি তাড়াতাড়ি চলে আসব তোমার কাছে 🚶🏻‍♂️🫶🏻</p>
+        <p class="message">যদি ঘুম পায়, ঘুমিয়েন শান্তিতে 💤</p>
+        <p class="message">কোনো কিছু নিয়ে টেনশন কইরেন না 🙏🏻</p>
+        <p class="message">কারণ আমি আছি, সবসময়… ❤️‍🩹🫂</p>
+    </div>
+
+    <!-- দ্বিতীয় প্রেজেন্টেশন: লিরিক্স -->
+    <div class="lyrics-container" id="lyrics-container">
+        <p class="lyrics-line">তোমার আমার টুকরো সুতোর বাঁধন 🪢</p>
+        <p class="lyrics-line">যেন জাদুর মত টানছে আমায় ✨</p>
+        <p class="lyrics-line">আলতো করে বাঁধছে আমায় 🌸</p>
+        <p class="lyrics-line">ভাঙছে আমার সাধন 💔</p>
+        <p class="lyrics-line">তোমার চোখে আয়না দেখি 👀🪞</p>
+        <p class="lyrics-line">চোখে চোখে গল্প করি 💫</p>
+        <p class="lyrics-line">রাত দুপুরে স্পর্শ করে 🌙</p>
+        <p class="lyrics-line">উড়ছি আমি এখন 🕊️</p>
+        <p class="lyrics-line">চোখের তারায় উষ্ণ বালিশ 💤</p>
+        <p class="lyrics-line">তোমায় কেবল খুঁজে 🤍</p>
+        <p class="lyrics-line">ঝুম দুপুরে বৃষ্টি হলে 🌧️</p>
+        <p class="lyrics-line">মেঘলা কেন সাজে ☁️💭</p>
+        <p class="lyrics-line">তুমি আমার অন্ধকারের আলো 🔦</p>
+        <p class="lyrics-line">মিষ্টি জোড়া কানের দুলে 💖</p>
+        <p class="lyrics-line">রোদ মাখানো সকাল জুড়ে 🌤️</p>
+        <p class="lyrics-line">তুমি আমায় বাসো ভালো 💞</p>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const startScreen = document.getElementById('start-screen');
+            const backgroundSong = document.getElementById('background-song');
+            const chatContainer = document.getElementById('chat-container');
+            const lyricsContainer = document.getElementById('lyrics-container');
             const messages = document.querySelectorAll('.message');
-            const heartsContainer = document.getElementById('hearts-container');
-            
-            // আসল লেখাগুলো একটি অ্যারে-তে সেভ করা হচ্ছে
+            const lyricsLines = document.querySelectorAll('.lyrics-line');
+            const emojisContainer = document.getElementById('emojis-container');
+            const emojis = ['🩷', '🌸', '🕊️', '💫', '☁️'];
+
+            // আসল লেখাগুলো সেভ করা
             const textLines = Array.from(messages).map(msg => msg.innerHTML);
-            
-            // মেসেজ বক্সগুলো খালি করা হচ্ছে
             messages.forEach(msg => msg.innerHTML = '');
 
             let messageIndex = 0;
-            const typingSpeed = 80; // টাইপিং স্পিড (মিলিসেকেন্ড)
-            const delayBetweenMessages = 1200; // এক মেসেজ থেকে অন্য মেসেজের মধ্যেকার সময়
+            const typingSpeed = 90;
+            const delayBetweenMessages = 1500;
+
+            function startExperience() {
+                // স্টার্ট স্ক্রিন மறை
+                startScreen.style.opacity = '0';
+                setTimeout(() => startScreen.style.display = 'none', 500);
+
+                // গান এবং অ্যানিমেশন শুরু
+                backgroundSong.play();
+                setInterval(createFallingEmoji, 400);
+                setTimeout(typeMessage, 1000);
+            }
+
+            startScreen.addEventListener('click', startExperience, { once: true });
 
             function typeMessage() {
-                if (messageIndex >= messages.length) return;
+                if (messageIndex >= messages.length) {
+                    setTimeout(() => {
+                        chatContainer.style.display = 'none';
+                        showLyrics();
+                    }, 2000); // চ্যাট শেষ হওয়ার ২ সেকেন্ড পর লিরিক্স শুরু
+                    return;
+                }
 
                 const currentMessageEl = messages[messageIndex];
                 const currentText = textLines[messageIndex];
                 let charIndex = 0;
-
                 currentMessageEl.classList.add('visible');
                 currentMessageEl.innerHTML = '<span class="cursor"></span>';
                 
                 const typingInterval = setInterval(() => {
                     if (charIndex < currentText.length) {
-                        const textSoFar = currentText.substring(0, charIndex + 1);
-                        currentMessageEl.innerHTML = textSoFar + '<span class="cursor"></span>';
+                        currentMessageEl.innerHTML = currentText.substring(0, charIndex + 1) + '<span class="cursor"></span>';
                         charIndex++;
-
-                        // অটো-স্ক্রল
-                        window.scrollTo({
-                            top: document.body.scrollHeight,
-                            behavior: 'smooth'
-                        });
-
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                     } else {
                         clearInterval(typingInterval);
-                        // কার্সার তুলে দেওয়া
                         currentMessageEl.innerHTML = currentText;
                         messageIndex++;
                         setTimeout(typeMessage, delayBetweenMessages);
                     }
                 }, typingSpeed);
             }
-            
-            // হার্ট তৈরি করার ফাংশন
-            function createHeart() {
-                const heart = document.createElement('div');
-                heart.classList.add('heart');
-                heart.innerText = '🩷';
-                
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.animationDuration = Math.random() * 3 + 4 + 's'; // 4-7 সেকেন্ড
-                
-                heartsContainer.appendChild(heart);
 
-                setTimeout(() => {
-                    heart.remove();
-                }, 7000); // 7 সেকেন্ড পর হার্ট ডিলিট হবে
+            function showLyrics() {
+                lyricsContainer.style.display = 'flex';
+                lyricsLines.forEach((line, index) => {
+                    setTimeout(() => {
+                        line.classList.add('visible');
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    }, index * 2000); // প্রতি ২ সেকেন্ড পর পর নতুন লাইন
+                });
             }
-
-            // প্রথম মেসেজ টাইপ করা শুরু হবে
-            setTimeout(typeMessage, 1000);
             
-            // নির্দিষ্ট সময় পর পর হার্ট তৈরি হবে
-            setInterval(createHeart, 400);
+            function createFallingEmoji() {
+                const emoji = document.createElement('div');
+                emoji.classList.add('emoji');
+                emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + 'vw';
+                emoji.style.animationDuration = Math.random() * 3 + 5 + 's';
+                emojisContainer.appendChild(emoji);
+                setTimeout(() => emoji.remove(), 8000);
+            }
         });
     </script>
 </body>
