@@ -8,95 +8,181 @@
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;700&display=swap');
 
         body {
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
+            padding: 0;
             font-family: 'Hind Siliguri', sans-serif;
-            overflow: hidden; /* বাইরে কিছু যেন না যায় */
-        }
-
-        .container {
-            width: 90%;
-            max-width: 800px;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .text-line {
-            font-size: 1.8rem; /* লেখার সাইজ একটু বড় করা হলো */
+            background: linear-gradient(135deg, #ffc0cb, #f9a5b9); /* সুন্দর গোলাপী গ্রেডিয়েন্ট */
             color: #333;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInSlideUp 1.5s forwards;
-            margin-bottom: 25px; /* লাইনগুলোর মধ্যে ফাঁকা জায়গা */
-            line-height: 1.6;
+            overflow-x: hidden; /* পাশাপাশি স্ক্রল বন্ধ করা হলো */
         }
 
-        /* প্রতিটি লাইনের জন্য আলাদা আলাদা অ্যানিমেশন ডিলে */
-        .text-line:nth-child(1) {
-            animation-delay: 0.5s;
-        }
-        .text-line:nth-child(2) {
-            animation-delay: 2.5s;
-        }
-        .text-line:nth-child(3) {
-            animation-delay: 4.5s;
-        }
-        .text-line:nth-child(4) {
-            animation-delay: 6.5s;
-        }
-        .text-line:nth-child(5) {
-            animation-delay: 8.5s;
-        }
-        .text-line:nth-child(6) {
-            animation-delay: 10.5s;
-        }
-        .text-line:nth-child(7) {
-            animation-delay: 12.5s;
-        }
-        .text-line:nth-child(8) {
-            animation-delay: 14.5s;
-        }
-        .text-line:nth-child(9) {
-            animation-delay: 16.5s;
+        /* উপর থেকে ঝরে পড়া হার্টের জন্য কন্টেইনার */
+        .hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none; /* হার্টগুলোতে যেন ক্লিক না করা যায় */
+            z-index: 9999;
         }
 
-        /* অ্যানিমেশন কীফ্রেম */
-        @keyframes fadeInSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
+        .heart {
+            position: absolute;
+            top: -10vh; /* স্ক্রিনের বাইরে থেকে শুরু হবে */
+            font-size: 2rem;
+            animation: fall linear forwards;
+        }
+
+        /* হার্ট ঝরে পড়ার অ্যানিমেশন */
+        @keyframes fall {
             to {
-                opacity: 1;
-                transform: translateY(0);
+                transform: translateY(110vh) rotate(360deg);
             }
         }
 
-        /* মোবাইল ডিভাইসের জন্য লেখার সাইজ ছোট করা হলো */
+        /* লেখার জন্য প্রধান কন্টেইনার */
+        .chat-container {
+            width: 90%;
+            max-width: 700px;
+            margin: 5vh auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* প্রতিটি লেখার মেসেজ বক্স */
+        .message {
+            font-size: 1.5rem;
+            line-height: 1.7;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            opacity: 0; /* শুরুতে অদৃশ্য থাকবে */
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* টাইপিং কার্সার */
+        .cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.5rem;
+            background-color: #555;
+            animation: blink 0.7s infinite;
+            margin-left: 5px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        /* মোবাইল ডিভাইসের জন্য স্টাইল */
         @media (max-width: 600px) {
-            .text-line {
-                font-size: 1.3rem;
+            .message {
+                font-size: 1.2rem;
+                padding: 12px 15px;
+            }
+            .cursor {
+                height: 1.2rem;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <p class="text-line">🌸 আমার জীবনে আমি সব থেকে সুন্দর একটা জিনিস পেয়েছি — সেটা হলো তুমি... 💞</p>
-        <p class="text-line">আমি শুধু তোমার সাথেই এইরকম ফ্রি মাইন্ডসেটে কথা বলি 🫶🏻</p>
-        <p class="text-line">সব মানুষের জীবনেই তো একটা best person থাকে — আমার জীবনে সেটা তুমিই 💗</p>
-        <p class="text-line">আহ ভাবলেই চোখে পানি চলে আসে 😢 শরীর কেমন যেন হয়ে যায়... 🥺</p>
-        <p class="text-line">কতো কতো সময়, কতো কতো মেসেজ 🕊️ তোমার কাছে সত্যিই আমি কৃতজ্ঞ সারাজীবনের জন্য 🙏🏻❤️</p>
-        <p class="text-line">Love You... 💞🌸</p>
-        <p class="text-line">আজ শুধু ওই ঐশীর জন্যই সব মানুষের কাছে খারাপ হয়ে গেছো 😔 কারণ মানুষ তো সত্যিটা জানে না, তারা তো কিছুই দেখেনি 💭 তাই মনটা কেমন জানি ভারী লাগে 💔</p>
-        <p class="text-line">যদি এই মানুষটাকে নিজের করে পাওয়া যেতো... 😭 তাহলে জীবনের আনন্দটা আরো হাজার গুণ বেড়ে যেতো 🌈💫</p>
-        <p class="text-line">তুমি যদি অন্য রাজ্যের ‘🫅🏻’ হও, তবুও তুমি আমার বাগানের ‘🦋🌸’ — আর আমি শুধু তোমারই... 💞✨</p>
+    <div class="hearts-container" id="hearts-container"></div>
+
+    <div class="chat-container" id="chat-container">
+        <!-- লেখাগুলো এখানে রাখা হয়েছে, কিন্তু JavaScript দিয়ে দেখানো হবে -->
+        <p class="message">🌸 আমার জীবনে আমি সব থেকে সুন্দর একটা জিনিস পেয়েছি — সেটা হলো তুমি... 💞</p>
+        <p class="message">আমি শুধু তোমার সাথেই এইরকম ফ্রি মাইন্ডসেটে কথা বলি 🫶🏻</p>
+        <p class="message">সব মানুষের জীবনেই তো একটা best person থাকে — আমার জীবনে সেটা তুমিই 💗</p>
+        <p class="message">আহ ভাবলেই চোখে পানি চলে আসে 😢 শরীর কেমন যেন হয়ে যায়... 🥺</p>
+        <p class="message">কতো কতো সময়, কতো কতো মেসেজ 🕊️ তোমার কাছে সত্যিই আমি কৃতজ্ঞ সারাজীবনের জন্য 🙏🏻❤️</p>
+        <p class="message">Love You... 💞🌸</p>
+        <p class="message">আজ শুধু ওই ঐশীর জন্যই সব মানুষের কাছে খারাপ হয়ে গেছো 😔 কারণ মানুষ তো সত্যিটা জানে না, তারা তো কিছুই দেখেনি 💭 তাই মনটা কেমন জানি ভারী লাগে 💔</p>
+        <p class="message">যদি এই মানুষটাকে নিজের করে পাওয়া যেতো... 😭 তাহলে জীবনের আনন্দটা আরো হাজার গুণ বেড়ে যেতো 🌈💫</p>
+        <p class="message">তুমি যদি অন্য রাজ্যের ‘🫅🏻’ হও, তবুও তুমি আমার বাগানের ‘🦋🌸’ — আর আমি শুধু তোমারই... 💞✨</p>
     </div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const messages = document.querySelectorAll('.message');
+            const heartsContainer = document.getElementById('hearts-container');
+            
+            // আসল লেখাগুলো একটি অ্যারে-তে সেভ করা হচ্ছে
+            const textLines = Array.from(messages).map(msg => msg.innerHTML);
+            
+            // মেসেজ বক্সগুলো খালি করা হচ্ছে
+            messages.forEach(msg => msg.innerHTML = '');
+
+            let messageIndex = 0;
+            const typingSpeed = 80; // টাইপিং স্পিড (মিলিসেকেন্ড)
+            const delayBetweenMessages = 1200; // এক মেসেজ থেকে অন্য মেসেজের মধ্যেকার সময়
+
+            function typeMessage() {
+                if (messageIndex >= messages.length) return;
+
+                const currentMessageEl = messages[messageIndex];
+                const currentText = textLines[messageIndex];
+                let charIndex = 0;
+
+                currentMessageEl.classList.add('visible');
+                currentMessageEl.innerHTML = '<span class="cursor"></span>';
+                
+                const typingInterval = setInterval(() => {
+                    if (charIndex < currentText.length) {
+                        const textSoFar = currentText.substring(0, charIndex + 1);
+                        currentMessageEl.innerHTML = textSoFar + '<span class="cursor"></span>';
+                        charIndex++;
+
+                        // অটো-স্ক্রল
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: 'smooth'
+                        });
+
+                    } else {
+                        clearInterval(typingInterval);
+                        // কার্সার তুলে দেওয়া
+                        currentMessageEl.innerHTML = currentText;
+                        messageIndex++;
+                        setTimeout(typeMessage, delayBetweenMessages);
+                    }
+                }, typingSpeed);
+            }
+            
+            // হার্ট তৈরি করার ফাংশন
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerText = '🩷';
+                
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 3 + 4 + 's'; // 4-7 সেকেন্ড
+                
+                heartsContainer.appendChild(heart);
+
+                setTimeout(() => {
+                    heart.remove();
+                }, 7000); // 7 সেকেন্ড পর হার্ট ডিলিট হবে
+            }
+
+            // প্রথম মেসেজ টাইপ করা শুরু হবে
+            setTimeout(typeMessage, 1000);
+            
+            // নির্দিষ্ট সময় পর পর হার্ট তৈরি হবে
+            setInterval(createHeart, 400);
+        });
+    </script>
 </body>
 </html>
