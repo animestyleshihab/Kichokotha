@@ -2,137 +2,128 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>শুধু তোমার জন্য... 🌸</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>তোমাকে চাই... 💖</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;700&display=swap');
 
         :root {
-            --glow-color: #ff00ff;
+            --glow-color: rgba(255, 105, 180, 0.8);
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Baloo Da 2', cursive;
-            color: #fff;
-            overflow-x: hidden;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            margin: 0; padding: 0;
+            font-family: 'Anek Bangla', sans-serif;
+            color: #fff; overflow-x: hidden;
+            background: linear-gradient(-45deg, #ff007f, #ff7f00, #ffc500, #00eaff, #8a2be2, #00ff7f, #ff00ff);
+            background-size: 600% 600%;
+            animation: auroraBG 20s ease infinite;
         }
 
-        @keyframes gradientBG {
+        @keyframes auroraBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* --- স্টার্ট স্ক্রিন --- */
+        #main-wrapper {
+            transition: filter 0.8s ease-in-out;
+        }
+        #main-wrapper.blurred {
+            filter: blur(15px);
+            transform: scale(1.05);
+        }
+
         #start-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            z-index: 10000;
-            transition: opacity 0.8s ease-out;
-            backdrop-filter: blur(5px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+            z-index: 10000; transition: opacity 0.8s ease-out;
         }
 
         .title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 40px var(--glow-color);
-            animation: heartbeat 1.5s infinite;
+            font-size: 4rem; font-weight: 700;
+            animation: liquid-glow 3s infinite alternate;
+            text-align: center;
         }
 
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        @keyframes liquid-glow {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px var(--glow-color), 0 0 30px #e60073, 0 0 40px #e60073; }
+            to { text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6; }
         }
         
-        #quick-start-btn {
-            margin-top: 30px;
-            padding: 15px 35px;
-            font-size: 1.2rem;
-            font-family: 'Baloo Da 2', cursive;
-            color: white;
-            background: linear-gradient(45deg, #ff007f, #ff7f00);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.7);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        .action-btn {
+            margin-top: 30px; padding: 15px 35px; font-size: 1.2rem; font-family: 'Anek Bangla', sans-serif;
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+        .action-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 105, 180, 0.6); }
+        .action-btn:active { transform: scale(0.95); }
 
-        #quick-start-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(255, 0, 127, 1);
-        }
-
-        /* --- ঝরে পড়া ইমোজি --- */
         .falling-emojis-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100vh; pointer-events: none; z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1; transition: transform 0.2s linear;
         }
         .emoji {
             position: absolute; top: -10vh; font-size: 1.8rem; animation: fall linear forwards;
         }
-        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
-        /* --- চ্যাট মেসেজ স্টাইল --- */
         .chat-container {
-            width: 90%; max-width: 700px; margin: 5vh auto; padding: 20px; box-sizing: border-box;
+            width: 90%; max-width: 700px; margin: 5vh auto; padding: 20px; box-sizing: border-box; display: none;
         }
         .message {
             font-size: 1.6rem; line-height: 1.8;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 18px 25px; border-radius: 25px; margin-bottom: 25px;
             opacity: 0; transform: translateY(20px);
             transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
-            border-bottom-left-radius: 8px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+            border-bottom-left-radius: 8px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
         }
         .message.visible { opacity: 1; transform: translateY(0); }
         .cursor { display: inline-block; width: 3px; height: 1.6rem; background-color: #fff; animation: blink 0.7s infinite; margin-left: 5px; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* --- ট্রানজিশন বাটন --- */
         #transition-container {
-            text-align: center; margin-top: 50px; display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; justify-content: center; align-items: center;
+            z-index: 10001;
         }
         #song-click-btn {
-            padding: 15px 35px; font-size: 1.2rem; font-family: 'Baloo Da 2', cursive; color: white;
-            background: linear-gradient(45deg, #00c6ff, #0072ff);
-            border: none; border-radius: 50px; cursor: pointer;
-            box-shadow: 0 0 20px rgba(0, 198, 255, 0.7);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform: scale(0);
+            opacity: 0;
+            animation: bounce-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        #song-click-btn:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(0, 198, 255, 1); }
+        @keyframes bounce-in {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
 
-        /* --- লিরিক্স স্টাইল --- */
         .lyrics-container {
             display: none; flex-direction: column; align-items: center; justify-content: center;
             width: 100%; min-height: 100vh; padding: 50px 20px; box-sizing: border-box; text-align: center;
         }
         .lyrics-line {
             font-size: 2.2rem; font-weight: 700; color: white;
-            text-shadow: 0 0 8px rgba(0,0,0,0.5), 0 0 15px var(--glow-color);
-            margin-bottom: 25px; opacity: 0; animation: lyric-appear 1.5s forwards;
+            text-shadow: 0 0 15px rgba(0,0,0,0.7); margin-bottom: 25px; opacity: 0;
+            animation: line-fade-in 1s forwards;
         }
-        @keyframes lyric-appear {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        .lyrics-line span {
+            display: inline-block; opacity: 0;
+            animation: word-wave 0.8s forwards;
+        }
+        @keyframes line-fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes word-wave {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         @media (max-width: 600px) {
-            .title { font-size: 2.5rem; }
+            .title { font-size: 2.8rem; }
             .message { font-size: 1.2rem; }
             .cursor { height: 1.2rem; }
             .lyrics-line { font-size: 1.8rem; }
@@ -141,55 +132,41 @@
 </head>
 <body>
     
+    <div id="main-wrapper">
+        <div class="falling-emojis-container" id="emojis-container"></div>
+        <div class="chat-container" id="chat-container">
+            <p class="message">আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু... 🌸</p>
+            <p class="message">আমার প্রিয় ‘🕊️🌸’, তোমার সারাদিনটা হোক শান্তি আর হাসিতে ভরা 💫</p>
+            <p class="message">এই যে 🕊️, মেম উঠছেন নি এখনো 😴</p>
+            <p class="message">ভাবছিলাম, আপনাকে নিয়ে আজ কলেজে যাবো 🎒💞</p>
+            <p class="message">কিন্তু আপনি ঘুমাচ্ছিলেন, তাই আর ডাক দেইনি 🥹</p>
+            <p class="message">আচ্ছা এখন শুনেন ☕</p>
+            <p class="message">আগে ফ্রেশ হয়ে নেন 🪞, তারপর নাসতা খান 🍞☕</p>
+            <p class="message">তারপর একটু রেস্ট নিন 🌸</p>
+            <p class="message">যদি ভালো না লাগে তাহলে একটা কল দেন 📞 না হয় ভিডিও দেখেন 🎥💗</p>
+            <p class="message">আমি তাড়াতাড়ি চলে আসব তোমার কাছে 🚶🏻‍♂️🫶🏻</p>
+            <p class="message">যদি ঘুম পায়, ঘুমিয়েন শান্তিতে 💤</p>
+            <p class="message">কোনো কিছু নিয়ে টেনশন কইরেন না 🙏🏻</p>
+            <p class="message">কারণ আমি আছি, সবসময়… ❤️‍🩹🫂</p>
+        </div>
+    </div>
+    
     <div id="start-screen">
-        <h1 class="title">তোমার জন্য</h1>
-        <button id="quick-start-btn">Quick Start</button>
+        <h1 class="title">তোমাকে চাই</h1>
+        <button id="quick-start-btn" class="action-btn">শুরু করুন</button>
+    </div>
+
+    <div id="transition-container">
+        <button id="song-click-btn" class="action-btn">Song</button>
+    </div>
+
+    <div class="lyrics-container" id="lyrics-container">
+        <!-- Lyrics will be injected by JS -->
     </div>
     
     <audio id="background-song" loop>
         <source src="https://cdn.pagalworld.us/songs/128/Pehli Dafa - Atif Aslam.mp3" type="audio/mpeg">
     </audio>
-
-    <div class="falling-emojis-container" id="emojis-container"></div>
-
-    <div class="chat-container" id="chat-container">
-        <p class="message">আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু... 🌸</p>
-        <p class="message">আমার প্রিয় ‘🕊️🌸’, তোমার সারাদিনটা হোক শান্তি আর হাসিতে ভরা 💫</p>
-        <p class="message">এই যে 🕊️, মেম উঠছেন নি এখনো 😴</p>
-        <p class="message">ভাবছিলাম, আপনাকে নিয়ে আজ কলেজে যাবো 🎒💞</p>
-        <p class="message">কিন্তু আপনি ঘুমাচ্ছিলেন, তাই আর ডাক দেইনি 🥹</p>
-        <p class="message">আচ্ছা এখন শুনেন ☕</p>
-        <p class="message">আগে ফ্রেশ হয়ে নেন 🪞, তারপর নাসতা খান 🍞☕</p>
-        <p class="message">তারপর একটু রেস্ট নিন 🌸</p>
-        <p class="message">যদি ভালো না লাগে তাহলে একটা কল দেন 📞 না হয় ভিডিও দেখেন 🎥💗</p>
-        <p class="message">আমি তাড়াতাড়ি চলে আসব তোমার কাছে 🚶🏻‍♂️🫶🏻</p>
-        <p class="message">যদি ঘুম পায়, ঘুমিয়েন শান্তিতে 💤</p>
-        <p class="message">কোনো কিছু নিয়ে টেনশন কইরেন না 🙏🏻</p>
-        <p class="message">কারণ আমি আছি, সবসময়… ❤️‍🩹🫂</p>
-    </div>
-
-    <div id="transition-container">
-        <button id="song-click-btn">Song Click</button>
-    </div>
-
-    <div class="lyrics-container" id="lyrics-container">
-        <p class="lyrics-line">তোমার আমার টুকরো সুতোর বাঁধন 🪢</p>
-        <p class="lyrics-line">যেন জাদুর মত টানছে আমায় ✨</p>
-        <p class="lyrics-line">আলতো করে বাঁধছে আমায় 🌸</p>
-        <p class="lyrics-line">ভাঙছে আমার সাধন 💔</p>
-        <p class="lyrics-line">তোমার চোখে আয়না দেখি 👀🪞</p>
-        <p class="lyrics-line">চোখে চোখে গল্প করি 💫</p>
-        <p class="lyrics-line">রাত দুপুরে স্পর্শ করে 🌙</p>
-        <p class="lyrics-line">উড়ছি আমি এখন 🕊️</p>
-        <p class="lyrics-line">চোখের তারায় উষ্ণ বালিশ 💤</p>
-        <p class="lyrics-line">তোমায় কেবল খুঁজে 🤍</p>
-        <p class="lyrics-line">ঝুম দুপুরে বৃষ্টি হলে 🌧️</p>
-        <p class="lyrics-line">মেঘলা কেন সাজে ☁️💭</p>
-        <p class="lyrics-line">তুমি আমার অন্ধকারের আলো 🔦</p>
-        <p class="lyrics-line">মিষ্টি জোড়া কানের দুলে 💖</p>
-        <p class="lyrics-line">রোদ মাখানো সকাল জুড়ে 🌤️</p>
-        <p class="lyrics-line">তুমি আমায় বাসো ভালো 💞</p>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -197,35 +174,53 @@
             const quickStartBtn = document.getElementById('quick-start-btn');
             const songClickBtn = document.getElementById('song-click-btn');
             const backgroundSong = document.getElementById('background-song');
+            const mainWrapper = document.getElementById('main-wrapper');
             const chatContainer = document.getElementById('chat-container');
             const lyricsContainer = document.getElementById('lyrics-container');
             const transitionContainer = document.getElementById('transition-container');
             const messages = document.querySelectorAll('.message');
-            const lyricsLines = document.querySelectorAll('.lyrics-line');
             const emojisContainer = document.getElementById('emojis-container');
-            const emojis = ['🩷', '🌸', '🕊️', '💫', '☁️', '✨'];
+            const emojis = ['🩷', '🌸', '🕊️', '💫', '☁️', '✨', '💖'];
 
             const textLines = Array.from(messages).map(msg => msg.innerHTML);
             messages.forEach(msg => msg.innerHTML = '');
+            
+            const lyricsText = [
+                "তোমার আমার টুকরো সুতোর বাঁধন 🪢", "যেন জাদুর মত টানছে আমায় ✨", "আলতো করে বাঁধছে আমায় 🌸", "ভাঙছে আমার সাধন 💔",
+                "তোমার চোখে আয়না দেখি 👀🪞", "চোখে চোখে গল্প করি 💫", "রাত দুপুরে স্পর্শ করে 🌙", "উড়ছি আমি এখন 🕊️",
+                "চোখের তারায় উষ্ণ বালিশ 💤", "তোমায় কেবল খুঁজে 🤍", "ঝুম দুপুরে বৃষ্টি হলে 🌧️", "মেঘলা কেন সাজে ☁️💭",
+                "তুমি আমার অন্ধকারের আলো 🔦", "মিষ্টি জোড়া কানের দুলে 💖", "রোদ মাখানো সকাল জুড়ে 🌤️", "তুমি আমায় বাসো ভালো 💞"
+            ];
 
             let messageIndex = 0;
-            const typingSpeed = 60; // Increased speed
-            const delayBetweenMessages = 1200;
+            const typingSpeed = 50;
+            const delayBetweenMessages = 1000;
 
             function startExperience() {
                 startScreen.style.opacity = '0';
                 setTimeout(() => startScreen.style.display = 'none', 800);
+                chatContainer.style.display = 'block';
                 backgroundSong.play();
-                setInterval(createFallingEmoji, 300);
+                setInterval(createFallingEmoji, 250);
                 setTimeout(typeMessage, 1000);
+                if (window.DeviceOrientationEvent) {
+                    window.addEventListener('deviceorientation', handleOrientation);
+                }
             }
 
+            function handleOrientation(event) {
+                const gamma = event.gamma; // -90 to 90
+                const beta = event.beta;   // -180 to 180
+                const x = Math.min(30, Math.max(-30, gamma)) / 2;
+                const y = Math.min(30, Math.max(-30, beta)) / 2;
+                emojisContainer.style.transform = `translate(${x}px, ${y}px)`;
+            }
+            
             quickStartBtn.addEventListener('click', startExperience, { once: true });
 
             function typeMessage() {
                 if (messageIndex >= messages.length) {
-                    transitionContainer.style.display = 'block';
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    showTransition();
                     return;
                 }
                 const currentMessageEl = messages[messageIndex];
@@ -247,13 +242,31 @@
                     }
                 }, typingSpeed);
             }
+            
+            function showTransition() {
+                mainWrapper.classList.add('blurred');
+                transitionContainer.style.display = 'flex';
+            }
 
             function showLyrics() {
-                chatContainer.style.display = 'none';
                 transitionContainer.style.display = 'none';
+                mainWrapper.style.display = 'none';
                 lyricsContainer.style.display = 'flex';
-                lyricsLines.forEach((line, index) => {
-                    line.style.animationDelay = `${index * 2}s`;
+                
+                lyricsText.forEach((line, lineIndex) => {
+                    const p = document.createElement('p');
+                    p.classList.add('lyrics-line');
+                    p.style.animationDelay = `${lineIndex * 2}s`;
+                    
+                    const words = line.split(' ');
+                    words.forEach((word, wordIndex) => {
+                        const span = document.createElement('span');
+                        span.textContent = word + ' ';
+                        span.style.animationDelay = `${(wordIndex * 0.1)}s`;
+                        p.appendChild(span);
+                    });
+                    
+                    lyricsContainer.appendChild(p);
                 });
             }
 
@@ -264,10 +277,10 @@
                 emoji.classList.add('emoji');
                 emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
                 emoji.style.left = Math.random() * 100 + 'vw';
-                emoji.style.fontSize = Math.random() * 1 + 1 + 'rem'; // Random size
-                emoji.style.animationDuration = Math.random() * 4 + 6 + 's'; // Slower, more majestic fall
+                emoji.style.fontSize = Math.random() * 1 + 1 + 'rem';
+                emoji.style.animationDuration = Math.random() * 5 + 7 + 's';
                 emojisContainer.appendChild(emoji);
-                setTimeout(() => emoji.remove(), 10000);
+                setTimeout(() => emoji.remove(), 12000);
             }
         });
     </script>
