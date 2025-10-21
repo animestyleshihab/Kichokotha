@@ -84,8 +84,7 @@
 
         #transition-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; justify-content: center; align-items: center;
-            z-index: 101;
+            display: none; justify-content: center; align-items: center; z-index: 101;
         }
         #song-click-btn {
             transform: scale(0); opacity: 0; font-size: 1.8rem; padding: 25px 60px;
@@ -94,60 +93,64 @@
         @keyframes bounce-in { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
         /* --- Lyrics World --- */
-        #lyrics-world { z-index: 5; }
-        #bg-video {
-            position: absolute; top: 50%; left: 50%;
-            width: 100%; height: 100%; object-fit: cover;
-            transform: translate(-50%, -50%);
-            z-index: -1;
+        #lyrics-world {
+            z-index: 5;
+            background: linear-gradient(180deg, #4a4aff, #ffffff, #ffff00, #ffa500, #ff0000);
+            background-size: 100% 400%;
+            animation: flow-bg 10s linear infinite alternate;
         }
-        .video-overlay {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
+        @keyframes flow-bg {
+            from { background-position: 0% 0%; }
+            to { background-position: 0% 100%; }
         }
+
         .lyrics-container {
-            width: 100%; height: 100%;
+            width: 100%; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px; text-align: center;
+            padding: 50px 20px; text-align: center;
         }
         .lyrics-line {
-            font-family: var(--font-title); font-size: 2.8rem;
-            margin-bottom: 40px; line-height: 1.5;
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 1s ease-out, transform 1s ease-out;
+            font-family: var(--font-title); font-size: 2.8rem; margin-bottom: 40px; line-height: 1.5;
+            opacity: 0; transition: opacity 1s, transform 1s;
+            background: linear-gradient(90deg, #ff007f, #00eaff, #ffc500, #ff007f);
+            background-size: 400% 100%;
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            animation: color-flow 4s linear infinite;
         }
-        .lyrics-line.visible { opacity: 1; transform: translateY(0); }
-        .lyrics-line .word {
-            display: inline-block; margin: 0 0.2em;
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 0.5s, transform 0.5s;
+        @keyframes color-flow {
+            from { background-position: 0% 50%; }
+            to { background-position: 400% 50%; }
         }
-        .lyrics-line.visible .word { opacity: 1; transform: translateY(0); }
+        .lyrics-line.anim-from-top { transform: translateY(-50px); }
+        .lyrics-line.anim-from-left { transform: translateX(-50px); }
+        .lyrics-line.anim-from-right { transform: translateX(50px); }
+        .lyrics-line.anim-zoom-in { transform: scale(0.5); }
+        .lyrics-line.visible { opacity: 1; transform: translate(0, 0) scale(1); }
         
-        #final-message {
-            position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%) scale(0.5);
-            font-size: 1.5rem; opacity: 0; transition: opacity 1s, transform 1s;
+        #restart-btn-container {
+            width: 100%; text-align: center; padding: 40px 0;
+            opacity: 0; transform: translateY(50px);
+            transition: opacity 1s, transform 1s;
         }
-        #final-message.visible { opacity: 1; transform: translateX(-50%) scale(1); }
+        #restart-btn-container.visible { opacity: 1; transform: translateY(0); }
+        #restart-btn { font-size: 1.5rem; padding: 20px 50px; }
 
         @media (max-width: 600px) {
             .title { font-size: 3.5rem; }
             .message { font-size: 1.3rem; }
             .lyrics-line { font-size: 2.2rem; }
-            #final-message { font-size: 1.2rem; }
+            #restart-btn { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
     
     <div id="lyrics-world" class="world">
-        <div class="video-overlay"></div>
-        <video id="bg-video" loop muted playsinline>
-            <source src="https://firebasestorage.googleapis.com/v0/b/angle-b0891.appspot.com/o/180302_02_08.mp4?alt=media&token=8659d482-145d-4001-9f20-b302c1143899" type="video/mp4">
-        </video>
-        <div class="lyrics-container" id="lyrics-container"></div>
-        <div id="final-message">যা বলছি মিয়া করো টাটা 😘</div>
+        <div class="lyrics-container" id="lyrics-container">
+            <div id="restart-btn-container">
+                <button id="restart-btn" class="action-btn">যা বলছি মিয়া করো টাটা 😘</button>
+            </div>
+        </div>
     </div>
     
     <div id="chat-world" class="world visible">
@@ -158,9 +161,7 @@
         </div>
         <div id="main-wrapper">
             <div class="falling-emojis-container" id="emojis-container"></div>
-            <div class="chat-container" id="chat-container">
-                 <!-- Messages will be injected here -->
-            </div>
+            <div class="chat-container" id="chat-container"></div>
         </div>
         <div id="transition-container">
             <button id="song-click-btn" class="action-btn">Song</button>
@@ -190,8 +191,8 @@
             const songClickBtn = getEl('song-click-btn'), backgroundSong = getEl('background-song');
             const mainWrapper = getEl('main-wrapper'), chatContainer = getEl('chat-container');
             const lyricsContainer = getEl('lyrics-container'), transitionContainer = getEl('transition-container');
-            const finalMessage = getEl('final-message'), emojisContainer = getEl('emojis-container');
-            const bgVideo = getEl('bg-video');
+            const restartBtnContainer = getEl('restart-btn-container'), restartBtn = getEl('restart-btn');
+            const emojisContainer = getEl('emojis-container');
 
             const messageTexts = [
                 "আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু... 🌸","আমার প্রিয় ‘🕊️🌸’, তোমার সারাদিনটা হোক শান্তি আর হাসিতে ভরা 💫",
@@ -201,9 +202,7 @@
                 "যদি ঘুম পায়, ঘুমিয়েন শান্তিতে 💤","কোনো কিছু নিয়ে টেনশন কইরেন না 🙏🏻","কারণ আমি আছি, সবসময়… ❤️‍🩹🫂"
             ];
             messageTexts.forEach(text => {
-                const p = document.createElement('p');
-                p.classList.add('message');
-                p.innerHTML = text;
+                const p = document.createElement('p'); p.classList.add('message'); p.innerHTML = text;
                 chatContainer.appendChild(p);
             });
             const messages = Array.from(chatContainer.querySelectorAll('.message'));
@@ -217,6 +216,7 @@
                 "তুমি আমার অন্ধকারের আলো 🔦", "মিষ্টি জোড়া কানের দুলে 💖", "রোদ মাখানো সকাল জুড়ে 🌤️", "তুমি আমায় বাসো ভালো 💞"
             ];
             const emojis = ['🩷', '🌸', '🕊️', '💫', '☁️', '✨', '💖'];
+            const animClasses = ['anim-from-top', 'anim-from-left', 'anim-from-right', 'anim-zoom-in'];
             let messageIndex = 0;
 
             function startExperience() {
@@ -234,8 +234,7 @@
             }
 
             function handleOrientation(e) {
-                const x = Math.min(25, Math.max(-25, e.gamma)) / 2;
-                const y = Math.min(25, Math.max(-25, e.beta)) / 2;
+                const x = Math.min(25, Math.max(-25, e.gamma))/2; const y = Math.min(25, Math.max(-25, e.beta))/2;
                 emojisContainer.style.transform = `translate(${x}px, ${y}px)`;
             }
 
@@ -264,41 +263,30 @@
 
             function showLyricsWorld() {
                 chatWorld.classList.remove('visible'); lyricsWorld.classList.add('visible');
-                bgVideo.play();
                 let totalDelay = 500;
-                lyricsText.forEach(line => {
+                lyricsText.forEach((line, index) => {
                     const p = document.createElement('p');
-                    p.classList.add('lyrics-line');
-                    lyricsContainer.appendChild(p);
-                    setTimeout(() => {
-                        p.classList.add('visible');
-                        const words = line.split(' ');
-                        words.forEach((word, wordIndex) => {
-                            const span = document.createElement('span');
-                            span.textContent = word;
-                            span.classList.add('word');
-                            span.style.transitionDelay = `${wordIndex * 0.1}s`;
-                            p.appendChild(span);
-                        });
-                    }, totalDelay);
-                    totalDelay += 2500;
+                    p.classList.add('lyrics-line', animClasses[index % animClasses.length]);
+                    p.textContent = line;
+                    lyricsContainer.insertBefore(p, restartBtnContainer);
+                    setTimeout(() => p.classList.add('visible'), totalDelay);
+                    totalDelay += 2000;
                 });
-                setTimeout(() => finalMessage.classList.add('visible'), totalDelay);
+                setTimeout(() => restartBtnContainer.classList.add('visible'), totalDelay);
             }
 
             function createFallingEmoji() {
                 const emoji = document.createElement('div');
-                emoji.classList.add('emoji');
-                emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-                emoji.style.left = Math.random() * 100 + 'vw';
-                emoji.style.fontSize = Math.random() * 1 + 1 + 'rem';
-                emoji.style.animationDuration = Math.random() * 5 + 8 + 's';
+                emoji.classList.add('emoji'); emoji.innerText = emojis[Math.floor(Math.random()*emojis.length)];
+                emoji.style.left = Math.random()*100+'vw'; emoji.style.fontSize = Math.random()*1+1+'rem';
+                emoji.style.animationDuration = Math.random()*5+8+'s';
                 emojisContainer.appendChild(emoji);
                 setTimeout(() => emoji.remove(), 13000);
             }
 
             quickStartBtn.addEventListener('click', startExperience, { once: true });
             songClickBtn.addEventListener('click', showLyricsWorld, { once: true });
+            restartBtn.addEventListener('click', () => { location.reload(); });
         });
     </script>
 </body>
