@@ -14,70 +14,46 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow: hidden; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
 
-        body {
-            font-family: var(--font-body);
-            color: #fff;
-            background: #000;
-        }
-
-        #aurora-canvas {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            z-index: -2;
-        }
-
-        #main-wrapper {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            overflow-y: auto;
-            transition: filter 0.8s ease-in-out;
-        }
-        #main-wrapper.blurred {
-            filter: blur(20px) brightness(0.7);
-            transform: scale(1.02);
-            pointer-events: none;
-        }
-
-        #start-screen {
+        /* --- World Containers --- */
+        .world {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
+            opacity: 0; transition: opacity 1.5s ease-in-out;
+            pointer-events: none;
+        }
+        .world.visible { opacity: 1; pointer-events: auto; }
+
+        /* --- Chat World --- */
+        #chat-world { z-index: 10; }
+        #aurora-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
+        #main-wrapper {
+            width: 100%; height: 100%; overflow-y: auto;
+            transition: filter 0.8s ease-in-out;
+        }
+        #main-wrapper.blurred { filter: blur(20px) brightness(0.7); pointer-events: none; }
+
+        #start-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center; flex-direction: column;
-            z-index: 100;
-            transition: opacity 1s ease-out;
+            z-index: 100; transition: opacity 1s ease-out;
         }
 
         .title {
-            font-family: var(--font-title);
-            font-size: 5rem;
-            font-weight: 700;
-            text-align: center;
-            color: #fff;
+            font-family: var(--font-title); font-size: 5rem; font-weight: 700; text-align: center; color: #fff;
             animation: glitch-glow 4s infinite;
         }
 
         @keyframes glitch-glow {
-            0%, 100% {
-                text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 30px var(--glow-color);
-                transform: skew(0);
-            }
-            25% {
-                text-shadow: 0 0 15px #ff4da6, 0 0 25px #ff4da6;
-                transform: skew(-2deg, 1deg);
-            }
-            75% {
-                text-shadow: 0 0 5px #e60073, 0 0 15px #e60073;
-                transform: skew(2deg, -1deg);
-            }
+            0%, 100% { text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); transform: skew(0); }
+            50% { text-shadow: 0 0 15px #ff4da6, 0 0 25px #ff4da6; transform: skew(-1deg, 1deg); }
         }
         
         .action-btn {
             margin-top: 40px; padding: 18px 45px; font-size: 1.4rem; font-family: var(--font-body);
             color: white; border: none; border-radius: 50px; cursor: pointer;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -86,22 +62,19 @@
         .action-btn:active { transform: translateY(-5px) scale(0.95); }
 
         .falling-emojis-container {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: -1; transition: transform 0.1s linear;
         }
-        .emoji {
-            position: absolute; top: -10vh; font-size: 1.8rem; animation: fall linear forwards;
-        }
+        .emoji { position: absolute; top: -10vh; font-size: 1.8rem; animation: fall linear forwards; }
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
         .chat-container {
             width: 90%; max-width: 700px; margin: 10vh auto; padding: 20px;
-            display: none; opacity: 0; transition: opacity 1s;
+            opacity: 0; transition: opacity 1s;
         }
         .chat-container.visible { opacity: 1; }
         .message {
-            font-size: 1.6rem; line-height: 1.8;
-            background: rgba(0, 0, 0, 0.3);
+            font-size: 1.6rem; line-height: 1.8; background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             padding: 18px 25px; border-radius: 25px; margin-bottom: 30px;
             transform: translateY(20px); opacity: 0;
@@ -121,47 +94,75 @@
             transform: scale(0); opacity: 0; font-size: 1.8rem; padding: 25px 60px;
             animation: bounce-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
-        @keyframes bounce-in {
-            from { transform: scale(0); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+        @keyframes bounce-in { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
+        /* --- Lyrics World --- */
+        #lyrics-world { z-index: 5; }
+        #bg-video {
+            position: absolute; top: 50%; left: 50%;
+            width: auto; height: auto; min-width: 100%; min-height: 100%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        .video-overlay {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
         .lyrics-container {
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; min-height: 100%; padding: 50px 20px; text-align: center;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
         }
         .lyrics-line {
-            font-family: var(--font-title);
-            font-size: 2.8rem; font-weight: 700; color: white;
+            font-family: var(--font-title); font-size: 2.8rem; font-weight: 700; color: white;
             text-shadow: 0 0 15px rgba(0,0,0,0.7); margin-bottom: 40px;
-            opacity: 0; animation: line-fade-in 1.5s forwards;
+            opacity: 0; transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
         }
-        .lyrics-line .char {
-            display: inline-block;
-            opacity: 0; transform: translateY(30px) scale(0.5) rotate(-10deg);
-            animation: letter-cascade 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        .lyrics-line.visible { opacity: 1; transform: translateY(0); }
+        .lyrics-line .word {
+            display: inline-block; opacity: 0; transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
         }
-        @keyframes line-fade-in { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes letter-cascade {
-            to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
-        }
+        .lyrics-line.visible .word { opacity: 1; transform: translateY(0); }
         
+        #final-message {
+            position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%) scale(0.5);
+            font-size: 1.5rem; font-family: var(--font-body); color: #fff; text-shadow: 0 0 10px black;
+            opacity: 0; transition: opacity 1s, transform 1s;
+        }
+        #final-message.visible { opacity: 1; transform: translateX(-50%) scale(1); }
+
         @media (max-width: 600px) {
             .title { font-size: 3.5rem; }
             .message { font-size: 1.3rem; }
-            .cursor { height: 1.3rem; }
             .lyrics-line { font-size: 2.2rem; }
+            #final-message { font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
     
-    <canvas id="aurora-canvas"></canvas>
-
-    <div id="main-wrapper">
-        <div class="falling-emojis-container" id="emojis-container"></div>
-        <div class="chat-container" id="chat-container">
-            <p class="message">আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু... 🌸</p>
+    <div id="lyrics-world" class="world">
+        <div class="video-overlay"></div>
+        <video id="bg-video" loop muted playsinline>
+            <source src="https://firebasestorage.googleapis.com/v0/b/angle-b0891.appspot.com/o/180302_02_08.mp4?alt=media&token=8659d482-145d-4001-9f20-b302c1143899" type="video/mp4">
+        </video>
+        <div class="lyrics-container" id="lyrics-container"></div>
+        <div id="final-message">যা বলছি মিয়া করো টাটা 😘</div>
+    </div>
+    
+    <div id="chat-world" class="world visible">
+        <canvas id="aurora-canvas"></canvas>
+        <div id="start-screen">
+            <h1 class="title">তোমাকে চাই</h1>
+            <button id="quick-start-btn" class="action-btn">শুরু করুন</button>
+        </div>
+        <div id="main-wrapper">
+            <div class="falling-emojis-container" id="emojis-container"></div>
+            <div class="chat-container" id="chat-container">
+                 <p class="message">আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু... 🌸</p>
             <p class="message">আমার প্রিয় ‘🕊️🌸’, তোমার সারাদিনটা হোক শান্তি আর হাসিতে ভরা 💫</p>
             <p class="message">এই যে 🕊️, মেম উঠছেন নি এখনো 😴</p>
             <p class="message">ভাবছিলাম, আপনাকে নিয়ে আজ কলেজে যাবো 🎒💞</p>
@@ -174,17 +175,11 @@
             <p class="message">যদি ঘুম পায়, ঘুমিয়েন শান্তিতে 💤</p>
             <p class="message">কোনো কিছু নিয়ে টেনশন কইরেন না 🙏🏻</p>
             <p class="message">কারণ আমি আছি, সবসময়… ❤️‍🩹🫂</p>
+            </div>
         </div>
-        <div class="lyrics-container" id="lyrics-container"></div>
-    </div>
-    
-    <div id="start-screen">
-        <h1 class="title">তোমাকে চাই</h1>
-        <button id="quick-start-btn" class="action-btn">শুরু করুন</button>
-    </div>
-
-    <div id="transition-container">
-        <button id="song-click-btn" class="action-btn">Song</button>
+        <div id="transition-container">
+            <button id="song-click-btn" class="action-btn">Song</button>
+        </div>
     </div>
     
     <audio id="background-song" loop>
@@ -192,71 +187,39 @@
     </audio>
 
     <script>
-        // Aurora Canvas Background Script
+        // Aurora Canvas
         const canvas = document.getElementById('aurora-canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
         let particles = [];
         const colors = ["#ff007f", "#ff7f00", "#ffc500", "#00eaff", "#8a2be2", "#00ff7f", "#ff00ff"];
-        
-        function Particle(x, y) {
-            this.x = x; this.y = y;
-            this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
-            this.radius = Math.random() * 300 + 150;
-            this.color = colors[Math.floor(Math.random() * colors.length)];
-        }
+        function Particle(x,y){this.x=x;this.y=y;this.vx=(Math.random()-.5)*.5;this.vy=(Math.random()-.5)*.5;this.radius=Math.random()*200+100;this.color=colors[Math.floor(Math.random()*colors.length)]}
+        function createParticles(){particles=[];for(let i=0;i<20;i++){particles.push(new Particle(Math.random()*canvas.width,Math.random()*canvas.height))}}
+        function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.globalCompositeOperation='lighter';particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<-p.radius||p.x>canvas.width+p.radius||p.y<-p.radius||p.y>canvas.height+p.radius){p.x=Math.random()*canvas.width;p.y=Math.random()*canvas.height}const grad=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.radius);grad.addColorStop(0,p.color+"33");grad.addColorStop(1,p.color+"00");ctx.fillStyle=grad;ctx.beginPath();ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);ctx.fill()});requestAnimationFrame(animate)}
+        createParticles();animate();
+        window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;createParticles()});
 
-        function createParticles() {
-            particles = [];
-            for(let i = 0; i < 15; i++) {
-                particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
-            }
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.globalCompositeOperation = 'lighter';
-            
-            particles.forEach(p => {
-                p.x += p.vx; p.y += p.vy;
-                if(p.x < -p.radius || p.x > canvas.width + p.radius || p.y < -p.radius || p.y > canvas.height + p.radius) {
-                    p.x = Math.random() * canvas.width; p.y = Math.random() * canvas.height;
-                }
-                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
-                grad.addColorStop(0, p.color + "33");
-                grad.addColorStop(1, p.color + "00");
-                ctx.fillStyle = grad;
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
-            });
-            requestAnimationFrame(animate);
-        }
-        
-        createParticles();
-        animate();
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            createParticles();
-        });
-
-        // Main Application Logic
+        // Main App
         document.addEventListener('DOMContentLoaded', () => {
-            const startScreen = document.getElementById('start-screen');
-            const quickStartBtn = document.getElementById('quick-start-btn');
-            const songClickBtn = document.getElementById('song-click-btn');
-            const backgroundSong = document.getElementById('background-song');
-            const mainWrapper = document.getElementById('main-wrapper');
-            const chatContainer = document.getElementById('chat-container');
-            const lyricsContainer = document.getElementById('lyrics-container');
-            const transitionContainer = document.getElementById('transition-container');
-            const messages = document.querySelectorAll('.message');
-            const emojisContainer = document.getElementById('emojis-container');
-            const emojis = ['🩷', '🌸', '🕊️', '💫', '☁️', '✨', '💖'];
+            const getEl = (id) => document.getElementById(id);
+            const chatWorld = getEl('chat-world');
+            const lyricsWorld = getEl('lyrics-world');
+            const startScreen = getEl('start-screen');
+            const quickStartBtn = getEl('quick-start-btn');
+            const songClickBtn = getEl('song-click-btn');
+            const backgroundSong = getEl('background-song');
+            const mainWrapper = getEl('main-wrapper');
+            const chatContainer = getEl('chat-container');
+            const lyricsContainer = getEl('lyrics-container');
+            const transitionContainer = getEl('transition-container');
+            const finalMessage = getEl('final-message');
+            const emojisContainer = getEl('emojis-container');
+            const bgVideo = getEl('bg-video');
 
-            const textLines = Array.from(messages).map(msg => msg.innerHTML);
+            const messages = Array.from(chatContainer.querySelectorAll('.message'));
+            const emojis = ['🩷', '🌸', '🕊️', '💫', '☁️', '✨', '💖'];
+            const textLines = messages.map(msg => msg.innerHTML);
             messages.forEach(msg => msg.innerHTML = '');
-            
             const lyricsText = [
                 "তোমার আমার টুকরো সুতোর বাঁধন 🪢", "যেন জাদুর মত টানছে আমায় ✨", "আলতো করে বাঁধছে আমায় 🌸", "ভাঙছে আমার সাধন 💔",
                 "তোমার চোখে আয়না দেখি 👀🪞", "চোখে চোখে গল্প করি 💫", "রাত দুপুরে স্পর্শ করে 🌙", "উড়ছি আমি এখন 🕊️",
@@ -265,95 +228,86 @@
             ];
 
             let messageIndex = 0;
-            const typingSpeed = 50;
-            const delayBetweenMessages = 1000;
 
             function startExperience() {
                 startScreen.style.opacity = '0';
                 setTimeout(() => startScreen.style.display = 'none', 1000);
-                chatContainer.style.display = 'block';
-                setTimeout(() => chatContainer.classList.add('visible'), 100);
-                
+                chatContainer.classList.add('visible');
                 backgroundSong.play().catch(() => {});
-                
                 setInterval(createFallingEmoji, 250);
                 setTimeout(typeMessage, 1200);
 
-                if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
-                    DeviceOrientationEvent.requestPermission().then(permissionState => {
-                        if (permissionState === 'granted') {
-                            window.addEventListener('deviceorientation', handleOrientation);
-                        }
-                    }).catch(console.error);
+                if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    DeviceOrientationEvent.requestPermission().then(p => { if (p === 'granted') window.addEventListener('deviceorientation', handleOrientation) }).catch(console.error);
                 } else if ('DeviceOrientationEvent' in window) {
                     window.addEventListener('deviceorientation', handleOrientation);
                 }
             }
 
-            function handleOrientation(event) {
-                const x = Math.min(25, Math.max(-25, event.gamma)) / 2;
-                const y = Math.min(25, Math.max(-25, event.beta)) / 2;
-                emojisContainer.style.transform = `translate(${x}px, ${y}px) rotateZ(${event.alpha/10}deg)`;
+            function handleOrientation(e) {
+                const x = Math.min(25, Math.max(-25, e.gamma)) / 2;
+                const y = Math.min(25, Math.max(-25, e.beta)) / 2;
+                emojisContainer.style.transform = `translate(${x}px, ${y}px)`;
             }
-            
-            quickStartBtn.addEventListener('click', startExperience, { once: true });
 
             function typeMessage() {
                 if (messageIndex >= messages.length) {
-                    setTimeout(showTransition, 1000);
-                    return;
+                    setTimeout(showTransition, 1000); return;
                 }
-                const currentMessageEl = messages[messageIndex];
-                const currentText = textLines[messageIndex];
+                const msgEl = messages[messageIndex];
+                const text = textLines[messageIndex];
                 let charIndex = 0;
-                currentMessageEl.classList.add('visible');
-                currentMessageEl.innerHTML = '<span class="cursor"></span>';
-                
-                const typingInterval = setInterval(() => {
-                    if (charIndex < currentText.length) {
-                        currentMessageEl.innerHTML = currentText.substring(0, charIndex + 1) + '<span class="cursor"></span>';
+                msgEl.classList.add('visible');
+                msgEl.innerHTML = '<span class="cursor"></span>';
+                const interval = setInterval(() => {
+                    if (charIndex < text.length) {
+                        msgEl.innerHTML = text.substring(0, charIndex + 1) + '<span class="cursor"></span>';
                         charIndex++;
                         mainWrapper.scrollTop = mainWrapper.scrollHeight;
                     } else {
-                        clearInterval(typingInterval);
-                        currentMessageEl.innerHTML = currentText;
+                        clearInterval(interval);
+                        msgEl.innerHTML = text;
                         messageIndex++;
-                        setTimeout(typeMessage, delayBetweenMessages);
+                        setTimeout(typeMessage, 1000);
                     }
-                }, typingSpeed);
+                }, 50);
             }
-            
+
             function showTransition() {
                 mainWrapper.classList.add('blurred');
                 transitionContainer.style.display = 'flex';
             }
 
-            function showLyrics() {
-                transitionContainer.style.display = 'none';
-                chatContainer.style.display = 'none';
-                mainWrapper.classList.remove('blurred');
-                mainWrapper.scrollTop = 0;
-                lyricsContainer.style.display = 'flex';
+            function showLyricsWorld() {
+                chatWorld.classList.remove('visible');
+                lyricsWorld.classList.add('visible');
+                bgVideo.play();
                 
+                let totalDelay = 500;
                 lyricsText.forEach((line, lineIndex) => {
                     const p = document.createElement('p');
                     p.classList.add('lyrics-line');
-                    p.style.animationDelay = `${lineIndex * 2.5}s`;
-                    
-                    line.split('').forEach((char, charIndex) => {
-                        const span = document.createElement('span');
-                        span.textContent = char;
-                        span.classList.add('char');
-                        span.style.animationDelay = `${(charIndex * 0.04)}s`;
-                        p.appendChild(span);
-                    });
-                    
                     lyricsContainer.appendChild(p);
+
+                    setTimeout(() => {
+                        p.classList.add('visible');
+                        const words = line.split(' ');
+                        words.forEach((word, wordIndex) => {
+                            const span = document.createElement('span');
+                            span.textContent = word + ' ';
+                            span.classList.add('word');
+                            span.style.transitionDelay = `${wordIndex * 0.1}s`;
+                            p.appendChild(span);
+                        });
+                    }, totalDelay);
+                    totalDelay += 2500;
                 });
+                
+                setTimeout(() => {
+                    finalMessage.classList.add('visible');
+                }, totalDelay);
             }
 
-            songClickBtn.addEventListener('click', showLyrics, { once: true });
-            
             function createFallingEmoji() {
                 const emoji = document.createElement('div');
                 emoji.classList.add('emoji');
@@ -364,7 +318,10 @@
                 emojisContainer.appendChild(emoji);
                 setTimeout(() => emoji.remove(), 13000);
             }
+
+            quickStartBtn.addEventListener('click', startExperience, { once: true });
+            songClickBtn.addEventListener('click', showLyricsWorld, { once: true });
         });
     </script>
 </body>
-</html>```
+</html>
