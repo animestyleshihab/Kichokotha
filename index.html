@@ -2,70 +2,92 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>তোমাকে চাই... 💖</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;700&family=Galada&display=swap');
 
         :root {
-            --glow-color: rgba(255, 105, 180, 0.8);
+            --glow-color: rgba(255, 105, 180, 0.9);
+            --font-title: 'Galada', cursive;
+            --font-body: 'Anek Bangla', sans-serif;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; }
 
         body {
-            margin: 0; padding: 0;
-            font-family: 'Anek Bangla', sans-serif;
-            color: #fff; overflow-x: hidden;
-            background: linear-gradient(-45deg, #ff007f, #ff7f00, #ffc500, #00eaff, #8a2be2, #00ff7f, #ff00ff);
-            background-size: 600% 600%;
-            animation: auroraBG 20s ease infinite;
+            font-family: var(--font-body);
+            color: #fff;
+            background: #000;
         }
 
-        @keyframes auroraBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        #aurora-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -2;
         }
 
         #main-wrapper {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            overflow-y: auto;
             transition: filter 0.8s ease-in-out;
         }
         #main-wrapper.blurred {
-            filter: blur(15px);
-            transform: scale(1.05);
+            filter: blur(20px) brightness(0.7);
+            transform: scale(1.02);
+            pointer-events: none;
         }
 
         #start-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center; flex-direction: column;
-            z-index: 10000; transition: opacity 0.8s ease-out;
+            z-index: 100;
+            transition: opacity 1s ease-out;
         }
 
         .title {
-            font-size: 4rem; font-weight: 700;
-            animation: liquid-glow 3s infinite alternate;
+            font-family: var(--font-title);
+            font-size: 5rem;
+            font-weight: 700;
             text-align: center;
+            color: #fff;
+            animation: glitch-glow 4s infinite;
         }
 
-        @keyframes liquid-glow {
-            from { text-shadow: 0 0 10px #fff, 0 0 20px var(--glow-color), 0 0 30px #e60073, 0 0 40px #e60073; }
-            to { text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6; }
+        @keyframes glitch-glow {
+            0%, 100% {
+                text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 30px var(--glow-color);
+                transform: skew(0);
+            }
+            25% {
+                text-shadow: 0 0 15px #ff4da6, 0 0 25px #ff4da6;
+                transform: skew(-2deg, 1deg);
+            }
+            75% {
+                text-shadow: 0 0 5px #e60073, 0 0 15px #e60073;
+                transform: skew(2deg, -1deg);
+            }
         }
         
         .action-btn {
-            margin-top: 30px; padding: 15px 35px; font-size: 1.2rem; font-family: 'Anek Bangla', sans-serif;
+            margin-top: 40px; padding: 18px 45px; font-size: 1.4rem; font-family: var(--font-body);
             color: white; border: none; border-radius: 50px; cursor: pointer;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .action-btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 105, 180, 0.6); }
-        .action-btn:active { transform: scale(0.95); }
+        .action-btn:hover { transform: translateY(-5px); box-shadow: 0 0 40px var(--glow-color); }
+        .action-btn:active { transform: translateY(-5px) scale(0.95); }
 
         .falling-emojis-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: -1; transition: transform 0.2s linear;
+            pointer-events: none; z-index: -1; transition: transform 0.1s linear;
         }
         .emoji {
             position: absolute; top: -10vh; font-size: 1.8rem; animation: fall linear forwards;
@@ -73,29 +95,30 @@
         @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
 
         .chat-container {
-            width: 90%; max-width: 700px; margin: 5vh auto; padding: 20px; box-sizing: border-box; display: none;
+            width: 90%; max-width: 700px; margin: 10vh auto; padding: 20px;
+            display: none; opacity: 0; transition: opacity 1s;
         }
+        .chat-container.visible { opacity: 1; }
         .message {
             font-size: 1.6rem; line-height: 1.8;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            padding: 18px 25px; border-radius: 25px; margin-bottom: 25px;
-            opacity: 0; transform: translateY(20px);
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            padding: 18px 25px; border-radius: 25px; margin-bottom: 30px;
+            transform: translateY(20px); opacity: 0;
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
             border-bottom-left-radius: 8px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
         }
-        .message.visible { opacity: 1; transform: translateY(0); }
+        .message.visible { transform: translateY(0); opacity: 1; }
         .cursor { display: inline-block; width: 3px; height: 1.6rem; background-color: #fff; animation: blink 0.7s infinite; margin-left: 5px; }
         @keyframes blink { 50% { opacity: 0; } }
 
         #transition-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: none; justify-content: center; align-items: center;
-            z-index: 10001;
+            z-index: 101;
         }
         #song-click-btn {
-            transform: scale(0);
-            opacity: 0;
+            transform: scale(0); opacity: 0; font-size: 1.8rem; padding: 25px 60px;
             animation: bounce-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         @keyframes bounce-in {
@@ -105,33 +128,36 @@
 
         .lyrics-container {
             display: none; flex-direction: column; align-items: center; justify-content: center;
-            width: 100%; min-height: 100vh; padding: 50px 20px; box-sizing: border-box; text-align: center;
+            width: 100%; min-height: 100%; padding: 50px 20px; text-align: center;
         }
         .lyrics-line {
-            font-size: 2.2rem; font-weight: 700; color: white;
-            text-shadow: 0 0 15px rgba(0,0,0,0.7); margin-bottom: 25px; opacity: 0;
-            animation: line-fade-in 1s forwards;
+            font-family: var(--font-title);
+            font-size: 2.8rem; font-weight: 700; color: white;
+            text-shadow: 0 0 15px rgba(0,0,0,0.7); margin-bottom: 40px;
+            opacity: 0; animation: line-fade-in 1.5s forwards;
         }
-        .lyrics-line span {
-            display: inline-block; opacity: 0;
-            animation: word-wave 0.8s forwards;
+        .lyrics-line .char {
+            display: inline-block;
+            opacity: 0; transform: translateY(30px) scale(0.5) rotate(-10deg);
+            animation: letter-cascade 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
         @keyframes line-fade-in { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes word-wave {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes letter-cascade {
+            to { opacity: 1; transform: translateY(0) scale(1) rotate(0); }
         }
         
         @media (max-width: 600px) {
-            .title { font-size: 2.8rem; }
-            .message { font-size: 1.2rem; }
-            .cursor { height: 1.2rem; }
-            .lyrics-line { font-size: 1.8rem; }
+            .title { font-size: 3.5rem; }
+            .message { font-size: 1.3rem; }
+            .cursor { height: 1.3rem; }
+            .lyrics-line { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
     
+    <canvas id="aurora-canvas"></canvas>
+
     <div id="main-wrapper">
         <div class="falling-emojis-container" id="emojis-container"></div>
         <div class="chat-container" id="chat-container">
@@ -149,6 +175,7 @@
             <p class="message">কোনো কিছু নিয়ে টেনশন কইরেন না 🙏🏻</p>
             <p class="message">কারণ আমি আছি, সবসময়… ❤️‍🩹🫂</p>
         </div>
+        <div class="lyrics-container" id="lyrics-container"></div>
     </div>
     
     <div id="start-screen">
@@ -159,16 +186,61 @@
     <div id="transition-container">
         <button id="song-click-btn" class="action-btn">Song</button>
     </div>
-
-    <div class="lyrics-container" id="lyrics-container">
-        <!-- Lyrics will be injected by JS -->
-    </div>
     
     <audio id="background-song" loop>
         <source src="https://cdn.pagalworld.us/songs/128/Pehli Dafa - Atif Aslam.mp3" type="audio/mpeg">
     </audio>
 
     <script>
+        // Aurora Canvas Background Script
+        const canvas = document.getElementById('aurora-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particles = [];
+        const colors = ["#ff007f", "#ff7f00", "#ffc500", "#00eaff", "#8a2be2", "#00ff7f", "#ff00ff"];
+        
+        function Particle(x, y) {
+            this.x = x; this.y = y;
+            this.vx = (Math.random() - 0.5) * 0.5; this.vy = (Math.random() - 0.5) * 0.5;
+            this.radius = Math.random() * 300 + 150;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function createParticles() {
+            particles = [];
+            for(let i = 0; i < 15; i++) {
+                particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.globalCompositeOperation = 'lighter';
+            
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x < -p.radius || p.x > canvas.width + p.radius || p.y < -p.radius || p.y > canvas.height + p.radius) {
+                    p.x = Math.random() * canvas.width; p.y = Math.random() * canvas.height;
+                }
+                const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
+                grad.addColorStop(0, p.color + "33");
+                grad.addColorStop(1, p.color + "00");
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        
+        createParticles();
+        animate();
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            createParticles();
+        });
+
+        // Main Application Logic
         document.addEventListener('DOMContentLoaded', () => {
             const startScreen = document.getElementById('start-screen');
             const quickStartBtn = document.getElementById('quick-start-btn');
@@ -198,29 +270,37 @@
 
             function startExperience() {
                 startScreen.style.opacity = '0';
-                setTimeout(() => startScreen.style.display = 'none', 800);
+                setTimeout(() => startScreen.style.display = 'none', 1000);
                 chatContainer.style.display = 'block';
-                backgroundSong.play();
+                setTimeout(() => chatContainer.classList.add('visible'), 100);
+                
+                backgroundSong.play().catch(() => {});
+                
                 setInterval(createFallingEmoji, 250);
-                setTimeout(typeMessage, 1000);
-                if (window.DeviceOrientationEvent) {
+                setTimeout(typeMessage, 1200);
+
+                if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                    DeviceOrientationEvent.requestPermission().then(permissionState => {
+                        if (permissionState === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation);
+                        }
+                    }).catch(console.error);
+                } else if ('DeviceOrientationEvent' in window) {
                     window.addEventListener('deviceorientation', handleOrientation);
                 }
             }
 
             function handleOrientation(event) {
-                const gamma = event.gamma; // -90 to 90
-                const beta = event.beta;   // -180 to 180
-                const x = Math.min(30, Math.max(-30, gamma)) / 2;
-                const y = Math.min(30, Math.max(-30, beta)) / 2;
-                emojisContainer.style.transform = `translate(${x}px, ${y}px)`;
+                const x = Math.min(25, Math.max(-25, event.gamma)) / 2;
+                const y = Math.min(25, Math.max(-25, event.beta)) / 2;
+                emojisContainer.style.transform = `translate(${x}px, ${y}px) rotateZ(${event.alpha/10}deg)`;
             }
             
             quickStartBtn.addEventListener('click', startExperience, { once: true });
 
             function typeMessage() {
                 if (messageIndex >= messages.length) {
-                    showTransition();
+                    setTimeout(showTransition, 1000);
                     return;
                 }
                 const currentMessageEl = messages[messageIndex];
@@ -233,7 +313,7 @@
                     if (charIndex < currentText.length) {
                         currentMessageEl.innerHTML = currentText.substring(0, charIndex + 1) + '<span class="cursor"></span>';
                         charIndex++;
-                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                        mainWrapper.scrollTop = mainWrapper.scrollHeight;
                     } else {
                         clearInterval(typingInterval);
                         currentMessageEl.innerHTML = currentText;
@@ -250,19 +330,21 @@
 
             function showLyrics() {
                 transitionContainer.style.display = 'none';
-                mainWrapper.style.display = 'none';
+                chatContainer.style.display = 'none';
+                mainWrapper.classList.remove('blurred');
+                mainWrapper.scrollTop = 0;
                 lyricsContainer.style.display = 'flex';
                 
                 lyricsText.forEach((line, lineIndex) => {
                     const p = document.createElement('p');
                     p.classList.add('lyrics-line');
-                    p.style.animationDelay = `${lineIndex * 2}s`;
+                    p.style.animationDelay = `${lineIndex * 2.5}s`;
                     
-                    const words = line.split(' ');
-                    words.forEach((word, wordIndex) => {
+                    line.split('').forEach((char, charIndex) => {
                         const span = document.createElement('span');
-                        span.textContent = word + ' ';
-                        span.style.animationDelay = `${(wordIndex * 0.1)}s`;
+                        span.textContent = char;
+                        span.classList.add('char');
+                        span.style.animationDelay = `${(charIndex * 0.04)}s`;
                         p.appendChild(span);
                     });
                     
@@ -278,11 +360,11 @@
                 emoji.innerText = emojis[Math.floor(Math.random() * emojis.length)];
                 emoji.style.left = Math.random() * 100 + 'vw';
                 emoji.style.fontSize = Math.random() * 1 + 1 + 'rem';
-                emoji.style.animationDuration = Math.random() * 5 + 7 + 's';
+                emoji.style.animationDuration = Math.random() * 5 + 8 + 's';
                 emojisContainer.appendChild(emoji);
-                setTimeout(() => emoji.remove(), 12000);
+                setTimeout(() => emoji.remove(), 13000);
             }
         });
     </script>
 </body>
-</html>
+</html>```
