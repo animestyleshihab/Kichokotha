@@ -14,12 +14,10 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; }
 
-        /* --- World Containers --- */
         .world {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             opacity: 0; transition: opacity 1.5s ease-in-out;
             pointer-events: none;
         }
@@ -29,7 +27,7 @@
         #chat-world { z-index: 10; }
         #aurora-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
         #main-wrapper {
-            width: 100%; height: 100%; overflow-y: auto;
+            width: 100%; height: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch;
             transition: filter 0.8s ease-in-out;
         }
         #main-wrapper.blurred { filter: blur(20px) brightness(0.7); pointer-events: none; }
@@ -41,10 +39,9 @@
         }
 
         .title {
-            font-family: var(--font-title); font-size: 5rem; font-weight: 700; text-align: center; color: #fff;
+            font-family: var(--font-title); font-size: 5rem; text-align: center;
             animation: glitch-glow 4s infinite;
         }
-
         @keyframes glitch-glow {
             0%, 100% { text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); transform: skew(0); }
             50% { text-shadow: 0 0 15px #ff4da6, 0 0 25px #ff4da6; transform: skew(-1deg, 1deg); }
@@ -100,7 +97,7 @@
         #lyrics-world { z-index: 5; }
         #bg-video {
             position: absolute; top: 50%; left: 50%;
-            width: auto; height: auto; min-width: 100%; min-height: 100%;
+            width: 100%; height: 100%; object-fit: cover;
             transform: translate(-50%, -50%);
             z-index: -1;
         }
@@ -115,22 +112,22 @@
             padding: 20px; text-align: center;
         }
         .lyrics-line {
-            font-family: var(--font-title); font-size: 2.8rem; font-weight: 700; color: white;
-            text-shadow: 0 0 15px rgba(0,0,0,0.7); margin-bottom: 40px;
+            font-family: var(--font-title); font-size: 2.8rem;
+            margin-bottom: 40px; line-height: 1.5;
             opacity: 0; transform: translateY(20px);
             transition: opacity 1s ease-out, transform 1s ease-out;
         }
         .lyrics-line.visible { opacity: 1; transform: translateY(0); }
         .lyrics-line .word {
-            display: inline-block; opacity: 0; transform: translateY(20px);
+            display: inline-block; margin: 0 0.2em;
+            opacity: 0; transform: translateY(20px);
             transition: opacity 0.5s, transform 0.5s;
         }
         .lyrics-line.visible .word { opacity: 1; transform: translateY(0); }
         
         #final-message {
             position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%) scale(0.5);
-            font-size: 1.5rem; font-family: var(--font-body); color: #fff; text-shadow: 0 0 10px black;
-            opacity: 0; transition: opacity 1s, transform 1s;
+            font-size: 1.5rem; opacity: 0; transition: opacity 1s, transform 1s;
         }
         #final-message.visible { opacity: 1; transform: translateX(-50%) scale(1); }
 
@@ -162,19 +159,7 @@
         <div id="main-wrapper">
             <div class="falling-emojis-container" id="emojis-container"></div>
             <div class="chat-container" id="chat-container">
-                 <p class="message">আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু... 🌸</p>
-            <p class="message">আমার প্রিয় ‘🕊️🌸’, তোমার সারাদিনটা হোক শান্তি আর হাসিতে ভরা 💫</p>
-            <p class="message">এই যে 🕊️, মেম উঠছেন নি এখনো 😴</p>
-            <p class="message">ভাবছিলাম, আপনাকে নিয়ে আজ কলেজে যাবো 🎒💞</p>
-            <p class="message">কিন্তু আপনি ঘুমাচ্ছিলেন, তাই আর ডাক দেইনি 🥹</p>
-            <p class="message">আচ্ছা এখন শুনেন ☕</p>
-            <p class="message">আগে ফ্রেশ হয়ে নেন 🪞, তারপর নাসতা খান 🍞☕</p>
-            <p class="message">তারপর একটু রেস্ট নিন 🌸</p>
-            <p class="message">যদি ভালো না লাগে তাহলে একটা কল দেন 📞 না হয় ভিডিও দেখেন 🎥💗</p>
-            <p class="message">আমি তাড়াতাড়ি চলে আসব তোমার কাছে 🚶🏻‍♂️🫶🏻</p>
-            <p class="message">যদি ঘুম পায়, ঘুমিয়েন শান্তিতে 💤</p>
-            <p class="message">কোনো কিছু নিয়ে টেনশন কইরেন না 🙏🏻</p>
-            <p class="message">কারণ আমি আছি, সবসময়… ❤️‍🩹🫂</p>
+                 <!-- Messages will be injected here -->
             </div>
         </div>
         <div id="transition-container">
@@ -188,13 +173,11 @@
 
     <script>
         // Aurora Canvas
-        const canvas = document.getElementById('aurora-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        let particles = [];
+        const canvas = document.getElementById('aurora-canvas'); const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight; let particles = [];
         const colors = ["#ff007f", "#ff7f00", "#ffc500", "#00eaff", "#8a2be2", "#00ff7f", "#ff00ff"];
-        function Particle(x,y){this.x=x;this.y=y;this.vx=(Math.random()-.5)*.5;this.vy=(Math.random()-.5)*.5;this.radius=Math.random()*200+100;this.color=colors[Math.floor(Math.random()*colors.length)]}
-        function createParticles(){particles=[];for(let i=0;i<20;i++){particles.push(new Particle(Math.random()*canvas.width,Math.random()*canvas.height))}}
+        function Particle(x,y){this.x=x;this.y=y;this.vx=(Math.random()-.5)*.3;this.vy=(Math.random()-.5)*.3;this.radius=Math.random()*150+100;this.color=colors[Math.floor(Math.random()*colors.length)]}
+        function createParticles(){particles=[];for(let i=0;i<15;i++){particles.push(new Particle(Math.random()*canvas.width,Math.random()*canvas.height))}}
         function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);ctx.globalCompositeOperation='lighter';particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<-p.radius||p.x>canvas.width+p.radius||p.y<-p.radius||p.y>canvas.height+p.radius){p.x=Math.random()*canvas.width;p.y=Math.random()*canvas.height}const grad=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.radius);grad.addColorStop(0,p.color+"33");grad.addColorStop(1,p.color+"00");ctx.fillStyle=grad;ctx.beginPath();ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);ctx.fill()});requestAnimationFrame(animate)}
         createParticles();animate();
         window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;createParticles()});
@@ -202,31 +185,38 @@
         // Main App
         document.addEventListener('DOMContentLoaded', () => {
             const getEl = (id) => document.getElementById(id);
-            const chatWorld = getEl('chat-world');
-            const lyricsWorld = getEl('lyrics-world');
-            const startScreen = getEl('start-screen');
-            const quickStartBtn = getEl('quick-start-btn');
-            const songClickBtn = getEl('song-click-btn');
-            const backgroundSong = getEl('background-song');
-            const mainWrapper = getEl('main-wrapper');
-            const chatContainer = getEl('chat-container');
-            const lyricsContainer = getEl('lyrics-container');
-            const transitionContainer = getEl('transition-container');
-            const finalMessage = getEl('final-message');
-            const emojisContainer = getEl('emojis-container');
+            const chatWorld = getEl('chat-world'), lyricsWorld = getEl('lyrics-world');
+            const startScreen = getEl('start-screen'), quickStartBtn = getEl('quick-start-btn');
+            const songClickBtn = getEl('song-click-btn'), backgroundSong = getEl('background-song');
+            const mainWrapper = getEl('main-wrapper'), chatContainer = getEl('chat-container');
+            const lyricsContainer = getEl('lyrics-container'), transitionContainer = getEl('transition-container');
+            const finalMessage = getEl('final-message'), emojisContainer = getEl('emojis-container');
             const bgVideo = getEl('bg-video');
 
+            const messageTexts = [
+                "আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু... 🌸","আমার প্রিয় ‘🕊️🌸’, তোমার সারাদিনটা হোক শান্তি আর হাসিতে ভরা 💫",
+                "এই যে 🕊️, মেম উঠছেন নি এখনো 😴","ভাবছিলাম, আপনাকে নিয়ে আজ কলেজে যাবো 🎒💞","কিন্তু আপনি ঘুমাচ্ছিলেন, তাই আর ডাক দেইনি 🥹",
+                "আচ্ছা এখন শুনেন ☕","আগে ফ্রেশ হয়ে নেন 🪞, তারপর নাসতা খান 🍞☕","তারপর একটু রেস্ট নিন 🌸",
+                "যদি ভালো না লাগে তাহলে একটা কল দেন 📞 না হয় ভিডিও দেখেন 🎥💗","আমি তাড়াতাড়ি চলে আসব তোমার কাছে 🚶🏻‍♂️🫶🏻",
+                "যদি ঘুম পায়, ঘুমিয়েন শান্তিতে 💤","কোনো কিছু নিয়ে টেনশন কইরেন না 🙏🏻","কারণ আমি আছি, সবসময়… ❤️‍🩹🫂"
+            ];
+            messageTexts.forEach(text => {
+                const p = document.createElement('p');
+                p.classList.add('message');
+                p.innerHTML = text;
+                chatContainer.appendChild(p);
+            });
             const messages = Array.from(chatContainer.querySelectorAll('.message'));
-            const emojis = ['🩷', '🌸', '🕊️', '💫', '☁️', '✨', '💖'];
             const textLines = messages.map(msg => msg.innerHTML);
-            messages.forEach(msg => msg.innerHTML = '');
+            messages.forEach(msg => { msg.innerHTML = ''; msg.classList.remove('visible'); });
+            
             const lyricsText = [
                 "তোমার আমার টুকরো সুতোর বাঁধন 🪢", "যেন জাদুর মত টানছে আমায় ✨", "আলতো করে বাঁধছে আমায় 🌸", "ভাঙছে আমার সাধন 💔",
                 "তোমার চোখে আয়না দেখি 👀🪞", "চোখে চোখে গল্প করি 💫", "রাত দুপুরে স্পর্শ করে 🌙", "উড়ছি আমি এখন 🕊️",
                 "চোখের তারায় উষ্ণ বালিশ 💤", "তোমায় কেবল খুঁজে 🤍", "ঝুম দুপুরে বৃষ্টি হলে 🌧️", "মেঘলা কেন সাজে ☁️💭",
                 "তুমি আমার অন্ধকারের আলো 🔦", "মিষ্টি জোড়া কানের দুলে 💖", "রোদ মাখানো সকাল জুড়ে 🌤️", "তুমি আমায় বাসো ভালো 💞"
             ];
-
+            const emojis = ['🩷', '🌸', '🕊️', '💫', '☁️', '✨', '💖'];
             let messageIndex = 0;
 
             function startExperience() {
@@ -236,7 +226,6 @@
                 backgroundSong.play().catch(() => {});
                 setInterval(createFallingEmoji, 250);
                 setTimeout(typeMessage, 1200);
-
                 if (typeof DeviceOrientationEvent.requestPermission === 'function') {
                     DeviceOrientationEvent.requestPermission().then(p => { if (p === 'granted') window.addEventListener('deviceorientation', handleOrientation) }).catch(console.error);
                 } else if ('DeviceOrientationEvent' in window) {
@@ -254,21 +243,16 @@
                 if (messageIndex >= messages.length) {
                     setTimeout(showTransition, 1000); return;
                 }
-                const msgEl = messages[messageIndex];
-                const text = textLines[messageIndex];
+                const msgEl = messages[messageIndex], text = textLines[messageIndex];
                 let charIndex = 0;
-                msgEl.classList.add('visible');
-                msgEl.innerHTML = '<span class="cursor"></span>';
+                msgEl.classList.add('visible'); msgEl.innerHTML = '<span class="cursor"></span>';
                 const interval = setInterval(() => {
                     if (charIndex < text.length) {
-                        msgEl.innerHTML = text.substring(0, charIndex + 1) + '<span class="cursor"></span>';
-                        charIndex++;
+                        msgEl.innerHTML = text.substring(0, ++charIndex) + '<span class="cursor"></span>';
                         mainWrapper.scrollTop = mainWrapper.scrollHeight;
                     } else {
-                        clearInterval(interval);
-                        msgEl.innerHTML = text;
-                        messageIndex++;
-                        setTimeout(typeMessage, 1000);
+                        clearInterval(interval); msgEl.innerHTML = text;
+                        messageIndex++; setTimeout(typeMessage, 1000);
                     }
                 }, 50);
             }
@@ -279,22 +263,19 @@
             }
 
             function showLyricsWorld() {
-                chatWorld.classList.remove('visible');
-                lyricsWorld.classList.add('visible');
+                chatWorld.classList.remove('visible'); lyricsWorld.classList.add('visible');
                 bgVideo.play();
-                
                 let totalDelay = 500;
-                lyricsText.forEach((line, lineIndex) => {
+                lyricsText.forEach(line => {
                     const p = document.createElement('p');
                     p.classList.add('lyrics-line');
                     lyricsContainer.appendChild(p);
-
                     setTimeout(() => {
                         p.classList.add('visible');
                         const words = line.split(' ');
                         words.forEach((word, wordIndex) => {
                             const span = document.createElement('span');
-                            span.textContent = word + ' ';
+                            span.textContent = word;
                             span.classList.add('word');
                             span.style.transitionDelay = `${wordIndex * 0.1}s`;
                             p.appendChild(span);
@@ -302,10 +283,7 @@
                     }, totalDelay);
                     totalDelay += 2500;
                 });
-                
-                setTimeout(() => {
-                    finalMessage.classList.add('visible');
-                }, totalDelay);
+                setTimeout(() => finalMessage.classList.add('visible'), totalDelay);
             }
 
             function createFallingEmoji() {
