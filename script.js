@@ -19,25 +19,14 @@ function Particle() {
     this.vx = Math.random() - 0.5; this.vy = -Math.random() * 2 - 1;
     this.size = Math.random() * 2 + 1; this.alpha = 1;
 }
-function createParticles() {
-    if (particles.length < 200) {
-        particles.push(new Particle());
-    }
-}
+function createParticles() { if (particles.length < 200) { particles.push(new Particle()); } }
 function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     createParticles();
     for(let i = 0; i < particles.length; i++) {
-        let p = particles[i];
-        p.x += p.vx; p.y += p.vy;
-        p.alpha -= 0.01;
-        if (p.alpha <= 0 || p.y < -10) {
-            particles.splice(i, 1); i--; continue;
-        }
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
-        ctx.fill();
+        let p = particles[i]; p.x += p.vx; p.y += p.vy; p.alpha -= 0.01;
+        if (p.alpha <= 0 || p.y < -10) { particles.splice(i, 1); i--; continue; }
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`; ctx.fill();
     }
     requestAnimationFrame(animateParticles);
 }
@@ -66,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
     
     messageTexts.forEach(text => {
-        const p = document.createElement('p'); p.classList.add('message-line');
+        const p = document.createElement('p'); p.classList.add('message-line'); p.textContent = text;
         messageContainer.appendChild(p);
     });
     const messageLines = Array.from(document.querySelectorAll('.message-line'));
@@ -77,35 +66,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (lineIndex >= messageLines.length) return;
         
         const lineEl = messageLines[lineIndex];
-        const text = messageTexts[lineIndex];
-        let charIndex = 0;
-        
+        const textLength = messageTexts[lineIndex].length;
+        const duration = textLength * 60; // 60ms per character
+
         lineEl.classList.add('visible');
+        
+        const typeAnimation = lineEl.animate([
+            { width: '0' },
+            { width: `${textLength}ch` } // 'ch' unit is character width
+        ], {
+            duration: duration,
+            easing: 'steps(1, end)',
+            fill: 'forwards'
+        });
 
-        function typeChar() {
-            if (charIndex < text.length) {
-                const span = document.createElement('span');
-                span.textContent = text[charIndex];
-                span.classList.add('char');
-                span.style.animationDelay = `${charIndex * 0.05}s`;
-                lineEl.appendChild(span);
-                
-                messageContainer.scrollTo({
-                    top: messageContainer.scrollHeight,
-                    behavior: 'smooth'
-                });
+        typeAnimation.onfinish = () => {
+            const glow = document.createElement('div');
+            glow.classList.add('line-glow');
+            lineEl.appendChild(glow);
+            lineIndex++;
+            
+            messageContainer.scrollTo({
+                top: messageContainer.scrollHeight,
+                behavior: 'smooth'
+            });
 
-                charIndex++;
-                setTimeout(typeChar, 60);
-            } else {
-                const glow = document.createElement('div');
-                glow.classList.add('line-glow');
-                lineEl.appendChild(glow);
-                lineIndex++;
-                setTimeout(typeLine, 800);
-            }
-        }
-        typeChar();
+            setTimeout(typeLine, 800);
+        };
     }
     
     function startExperience() {
@@ -116,9 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         envelopeFlap.style.transform = 'rotateX(180deg)';
         envelopeWrapper.classList.add('opening');
         
-        setTimeout(() => {
-            envelopeWrapper.classList.add('open');
-        }, 200);
+        setTimeout(() => { envelopeWrapper.classList.add('open'); }, 200);
 
         setTimeout(() => {
             envelopeScene.style.opacity = '0';
