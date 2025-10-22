@@ -104,11 +104,14 @@
         .message-line {
             font-family: var(--font-special); font-size: 2.2rem;
             line-height: 1.8; margin-bottom: 25px;
-            color: transparent;
-            background: linear-gradient(90deg, #ff7eb9, #ffc1e3);
-            background-size: 0% 100%;
-            background-repeat: no-repeat;
-            -webkit-background-clip: text; background-clip: text;
+        }
+        .message-line .char {
+            opacity: 0;
+            animation: char-appear 0.1s forwards;
+        }
+        @keyframes char-appear {
+            from { color: var(--pink); text-shadow: 0 0 10px var(--pink); }
+            to { opacity: 1; color: #fff; text-shadow: none; }
         }
         
         @media (max-width: 600px) {
@@ -217,26 +220,33 @@
             }
 
             let lineIndex = 0;
-            function typeLine() {
+            let charIndex = 0;
+            let currentLineEl = null;
+            let currentText = '';
+
+            function typeChar() {
                 if (lineIndex >= messageLines.length) return;
 
-                const lineEl = messageLines[lineIndex];
-                const text = messageTexts[lineIndex];
-                let charIndex = 0;
-                
-                const interval = setInterval(() => {
-                    if (charIndex <= text.length) {
-                        const revealedText = text.substring(0, charIndex);
-                        lineEl.innerHTML = revealedText + '<span style="opacity:0">' + text.substring(charIndex) + '</span>';
-                        lineEl.style.backgroundSize = `${(charIndex / text.length) * 100}% 100%`;
-                        charIndex++;
-                    } else {
-                        clearInterval(interval);
-                        lineEl.innerHTML = text;
-                        lineIndex++;
-                        setTimeout(typeLine, 500);
-                    }
-                }, 60);
+                if (!currentLineEl) {
+                    currentLineEl = messageLines[lineIndex];
+                    currentText = messageTexts[lineIndex];
+                    charIndex = 0;
+                }
+
+                if (charIndex < currentText.length) {
+                    const span = document.createElement('span');
+                    span.textContent = currentText[charIndex];
+                    span.classList.add('char');
+                    span.style.animationDelay = `${charIndex * 0.05}s`;
+                    currentLineEl.appendChild(span);
+                    charIndex++;
+                    setTimeout(typeChar, 50);
+                } else {
+                    lineIndex++;
+                    currentLineEl = null;
+                    setTimeout(typeChar, 500);
+                }
+                messageContainer.scrollTop = messageContainer.scrollHeight;
             }
             
             function startExperience() {
@@ -251,7 +261,7 @@
                 setTimeout(() => {
                     envelopeScene.style.opacity = '0';
                     messageScene.classList.add('visible');
-                    typeLine();
+                    typeChar();
                 }, 1000);
             }
 
