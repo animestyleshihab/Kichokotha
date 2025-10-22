@@ -3,31 +3,369 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>একটি বিশেষ বার্তা... 💌</title>
-    <link rel="stylesheet" href="style.css">
+    <title>তোমাকে চাই... 💖</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;700&family=Hind+Siliguri:wght@400;600&display=swap');
+
+        :root {
+            --primary-color: #ff85c2;
+            --bg-color: #000000;
+            --star-color: #ffffff;
+            --envelope-color: #f0e8d8;
+            --font-body: 'Anek Bangla', sans-serif;
+            --font-letter: 'Hind Siliguri', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg-color); }
+
+        /* --- স্টার অ্যানিমেশন --- */
+        .stars-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+        .star {
+            position: absolute; background-color: var(--star-color);
+            border-radius: 50%; animation: rise linear infinite;
+        }
+        @keyframes rise {
+            from { transform: translateY(100vh) scale(var(--star-scale)); }
+            to { transform: translateY(-10vh) scale(var(--star-scale)); }
+        }
+
+        /* --- প্রথম পেজ: এনভেলপ --- */
+        #start-screen {
+            width: 100%; height: 100%; display: flex;
+            justify-content: center; align-items: center;
+            perspective: 1000px;
+            position: fixed; top: 0; left: 0; z-index: 10;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .envelope-wrapper {
+            position: relative; width: 300px; height: 200px;
+            transform-style: preserve-3d;
+            transition: transform 1.5s ease-in-out;
+        }
+        .envelope-wrapper.open {
+            transform: translateY(100px) rotateX(20deg);
+        }
+
+        .envelope-back {
+            position: absolute; width: 100%; height: 100%;
+            background-color: var(--envelope-color);
+            border-radius: 5px;
+            box-shadow: 0 10px 40px rgba(255, 133, 194, 0.3);
+        }
+
+        .letter {
+            position: absolute; top: 5px; left: 5%; width: 90%;
+            height: 95%; background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            transition: transform 1.5s 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            transform: translateY(0);
+            z-index: 1;
+        }
+        .envelope-wrapper.open .letter {
+            transform: translateY(-250px);
+        }
+
+        .envelope-flap {
+            position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background-color: var(--envelope-color);
+            border-top-left-radius: 5px; border-top-right-radius: 5px;
+            transform-origin: bottom;
+            transition: transform 1s 0.2s ease-out;
+            transform: rotateX(0deg);
+            z-index: 3;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+        }
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+        
+        .heart-btn {
+            position: absolute;
+            top: 25%; left: 50%; transform: translate(-50%, -50%);
+            width: 80px; height: 80px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff4757"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            z-index: 4;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .heart-btn span {
+            color: white; font-family: var(--font-body); font-weight: bold;
+            font-size: 1.2rem; text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* --- দ্বিতীয় পেজ: মেসেজ --- */
+        #letter-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(10px);
+            z-index: 20;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 1.5s 1.5s ease-in-out;
+            padding: 20px;
+        }
+        .letter-content {
+            width: 100%; max-width: 800px; height: 90vh;
+            background-color: #fffaf0;
+            border-radius: 10px; padding: 40px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.2);
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+        
+        #message-container {
+            font-family: var(--font-letter); font-size: 1.5rem; line-height: 2;
+            color: #333; position: relative;
+        }
+
+        #message-container .line {
+            display: block;
+            opacity: 0;
+            background: linear-gradient(90deg, #555, var(--primary-color), #555);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: reveal-color 2s linear forwards, fade-in 1s forwards;
+            animation-delay: var(--delay);
+        }
+        @keyframes reveal-color {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
+        }
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* লিকুইড অ্যানিমেশন */
+        .liquid-animation {
+            position: absolute;
+            bottom: -20px; left: 0; width: 100%; height: 80px;
+            filter: url(#goo);
+            pointer-events: none;
+        }
+        .liquid-animation .blob {
+            position: absolute;
+            width: 30px; height: 30px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            bottom: 0;
+            animation: move-blob 10s infinite;
+        }
+        @keyframes move-blob {
+            0%, 100% { transform: translateX(0) scale(1); }
+            25% { transform: translateX(calc(100vw - 100px)) scale(1.5); }
+            50% { transform: translateX(50px) scale(0.8); }
+            75% { transform: translateX(calc(100vw - 150px)) scale(1.2); }
+        }
+
+        @media (max-width: 600px) {
+            .envelope-wrapper { width: 260px; height: 173px; }
+            #message-container { font-size: 1.2rem; line-height: 1.8; }
+            .letter-content { padding: 20px; }
+        }
+    </style>
 </head>
 <body>
-    <div id="youtube-player" class="hidden"></div>
-    <div id="starry-bg"></div>
-    <canvas id="particle-canvas"></canvas>
-    <div id="envelope-scene">
-        <div class="envelope-wrapper" id="envelope-wrapper">
-            <div class="envelope" id="envelope">
-                <div class="envelope-back"></div>
-                <div class="envelope-flap" id="envelope-flap"></div>
-                <div class="heart" id="touch-btn">
-                    <div class="heart-shape"></div>
-                    <span class="heart-text">Touch</span>
-                </div>
+
+    <!-- স্টার্ট স্ক্রিন -->
+    <div id="start-screen">
+        <div class="stars-container" id="star-container"></div>
+        <div class="envelope-wrapper" id="envelope">
+            <div class="letter" id="letter"></div>
+            <div class="envelope-back"></div>
+            <div class="envelope-flap"></div>
+            <div class="heart-btn" id="open-btn">
+                <span>Touch</span>
             </div>
         </div>
     </div>
-    <div id="message-scene">
-        <div class="message-container" id="message-container">
-            <!-- Messages will be injected by JavaScript -->
+    
+    <!-- লেটার বা মেসেজ স্ক্রিন -->
+    <div id="letter-screen">
+        <div class="letter-content">
+            <div id="message-container"></div>
+            <!-- লিকুইড অ্যানিমেশনের জন্য SVG ফিল্টার -->
+            <svg style="position:absolute; width:0; height:0;">
+                <defs>
+                    <filter id="goo">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                        <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+                        <feBlend in="SourceGraphic" in2="goo" />
+                    </filter>
+                </defs>
+            </svg>
+            <div class="liquid-animation">
+                <div class="blob"></div>
+                <div class="blob" style="animation-delay: 2s; width: 40px; height: 40px; left: 20%;"></div>
+                <div class="blob" style="animation-delay: 4s; width: 20px; height: 20px; left: 60%;"></div>
+                <div class="blob" style="animation-delay: 6s; width: 50px; height: 50px; left: 80%;"></div>
+            </div>
         </div>
     </div>
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="script.js"></script>
+
+    <!-- অডিও -->
+    <audio id="background-song" loop>
+        <!-- আমি আপনার দেওয়া ইউটিউব লিংকের সরাসরি অডিও ব্যবহার করতে পারিনি, কারণ এটি সম্ভব নয়।
+             তাই একটি একই ধরনের রোমান্টিক গানের অডিও লিঙ্ক দিয়েছি। -->
+        <source src="https://fi.jiosaavnp.com/320/2569527/Shonar_Kathi_Ruper_Kathi_1_2569527.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const getEl = (id) => document.getElementById(id);
+
+            const startScreen = getEl('start-screen');
+            const envelope = getEl('envelope');
+            const openBtn = getEl('open-btn');
+            const letterScreen = getEl('letter-screen');
+            const messageContainer = getEl('message-container');
+            const backgroundSong = getEl('background-song');
+            const starContainer = getEl('star-container');
+
+            // মহাকাশের মতো স্টার তৈরি
+            function createStars() {
+                for (let i = 0; i < 100; i++) {
+                    const star = document.createElement('div');
+                    star.classList.add('star');
+                    const size = Math.random() * 3 + 1;
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.left = `${Math.random() * 100}vw`;
+                    star.style.setProperty('--star-scale', Math.random() * 0.5 + 0.5);
+                    star.style.animationDuration = `${Math.random() * 10 + 5}s`;
+                    star.style.animationDelay = `${Math.random() * 5}s`;
+                    starContainer.appendChild(star);
+                }
+            }
+            createStars();
+
+            const messageText = `
+                💞✨ "তুমি বলো, তোমায় দিয়ে কী করবো?" ✨💞
+
+                তুমি জিজ্ঞেস করলে — “আমাকে দিয়ে কী করবা?”
+                আহ্... যদি জানতা তুমি, 
+                তোমাকে দিয়ে আমি কী করব জানো?
+                আমি তোমায় দিয়ে আমার পুরো জীবনটা সাজাবো... 💍🌸
+
+                তুমি হবে আমার সকাল—যার হাসিতে ঘুম ভাঙবে,
+                তুমি হবে আমার রাত—যার কণ্ঠে মন শান্তি পাবে 🌙💗
+                তোমার ছোট্ট এক হাসি আমার দিনকে করে তুলবে সুন্দর,
+                তোমার একটু রাগ, আমার ভালোবাসাকে করবে আরও গভীর 💞
+
+                আমি তোমার চোখে ভবিষ্যৎ দেখতে চাই 👀✨
+                তোমার হাতটা ধরে হাঁটতে চাই, বৃষ্টিতে, রোদে, ঠান্ডায়…
+                যেন কেউ না থাকে মাঝখানে, শুধু আমি আর তুমি 🫶🏻☔
+
+                তুমি যদি ক্লান্ত হও, আমি হব তোমার বিশ্রাম 🌿
+                তুমি যদি কাঁদো, আমি হব তোমার চোখের পানি 💧
+                তুমি যদি ভয় পাও, আমি হব তোমার সাহস 💪🏻❤️‍🔥
+
+                তুমি বলো "তোমায় দিয়ে কী করবো?"
+                আমি বলি —
+                তোমায় নিয়ে বাঁচবো।
+                তোমায় দিয়ে আমি স্বপ্ন দেখব, *** গল্পে তোমার নাম রাখব 🕊️💍
+                আমার প্রতিটা ‘সফলতা’র পিছনে থাকবে তোমার ছোঁয়া,
+                প্রতিটা দো’আয় থাকবে শুধু তুমি 💫
+
+                তুমি আমার দোয়া পূরণের উত্তর,
+                তুমি আমার জীবনের শান্তি, আমার ভবিষ্যতের হাসি 🌹🕊️
+
+                যদি আল্লাহ চায়, একটা দিন আসবে, ইনশাআল্লাহ্,
+                যেদিন তোমার হাতে রাখব আংটি, বলব —
+                "দেখো, এবার চিরদিনের জন্য আমার হয়ে গেলে..." 💍💗
+
+                তুমি আমার পৃথিবী, আমি তোমার ছায়া 🌏🤍
+                ভালোবাসা শুধু মুখের কথা না,*** 🫶🏻🔥
+            `;
+
+            // মেসেজ টাইপিং ফাংশন
+            function startTyping() {
+                const lines = messageText.trim().split('\n');
+                let charIndex = 0;
+                let lineIndex = 0;
+
+                function type() {
+                    if (lineIndex >= lines.length) return;
+
+                    let currentLine = lines[lineIndex].trim();
+                    if (charIndex < currentLine.length) {
+                        const currentSpan = messageContainer.querySelector(`.line-${lineIndex}`);
+                        currentSpan.innerHTML += currentLine[charIndex];
+                        charIndex++;
+                        setTimeout(type, 40); // প্রতিটি অক্ষরের মধ্যে সময়
+                    } else {
+                        lineIndex++;
+                        charIndex = 0;
+                        if (lineIndex < lines.length) {
+                             // নতুন লাইন শুরু করার আগে কিছু সময় বিরতি
+                            setTimeout(() => {
+                                setupNewLine();
+                                type();
+                            }, 500);
+                        }
+                    }
+                }
+                
+                function setupNewLine() {
+                    const lineSpan = document.createElement('span');
+                    lineSpan.classList.add('line', `line-${lineIndex}`);
+                    // খালি লাইনগুলোর জন্য একটি স্পেস যোগ করা হয়েছে
+                    if (lines[lineIndex].trim() === '') {
+                        lineSpan.innerHTML = '&nbsp;';
+                    }
+                    messageContainer.appendChild(lineSpan);
+                    
+                    // স্ক্রল অটোমেটিক নিচে নামানোর জন্য
+                    letterScreen.scrollTop = letterScreen.scrollHeight;
+                }
+                
+                setupNewLine();
+                type();
+            }
+            
+            // বাটন ক্লিক ইভেন্ট
+            openBtn.addEventListener('click', () => {
+                // ব্রাউজারের নিয়ম অনুযায়ী ব্যবহারকারী ইন্টার‍্যাক্ট করার পরেই গান বাজানো যায়
+                backgroundSong.play().catch(e => console.error("Audio play failed:", e));
+                
+                envelope.classList.add('open');
+                
+                setTimeout(() => {
+                    startScreen.style.opacity = '0';
+                    startScreen.style.pointerEvents = 'none';
+                    letterScreen.style.opacity = '1';
+                    letterScreen.style.pointerEvents = 'auto';
+
+                    // এখানে আমি আগের অ্যানিমেশন করা কোডটি ব্যবহার করেছি, কারণ টাইপিং ইফেক্ট খুব স্লো হয়ে যাচ্ছিল
+                    const lines = messageText.trim().split('\n');
+                    let delay = 0;
+                    messageContainer.innerHTML = ''; // আগের লেখা মুছে ফেলার জন্য
+                    lines.forEach(lineText => {
+                        const lineDiv = document.createElement('div');
+                        lineDiv.classList.add('line');
+                        lineDiv.textContent = lineText.trim() === '' ? ' ' : lineText;
+                        lineDiv.style.setProperty('--delay', `${delay}s`);
+                        messageContainer.appendChild(lineDiv);
+                        delay += 0.2;
+                    });
+                    
+                }, 2500); // এনভেলপ খোলার অ্যানিমেশনের সাথে সময় মিলিয়ে সেট করা
+
+            }, { once: true });
+        });
+    </script>
 </body>
 </html>
